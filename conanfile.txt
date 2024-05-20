@@ -1,8 +1,0 @@
-[requires]
-raylib/5.0
-tl-expected/1.1.0
-tl-optional/1.1.0
-
-[generators]
-CMakeDeps
-CMakeToolchain
