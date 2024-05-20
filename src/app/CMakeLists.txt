@@ -2,4 +2,9 @@ add_executable(app
     main.cpp)
 
 target_link_libraries(app
-    PRIVATE game raylib)
+    PRIVATE
+    game
+    gfx
+
+
+    raylib)

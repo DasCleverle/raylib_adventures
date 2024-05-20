@@ -1,17 +1,19 @@
-#include <raylib.h>
+#include <gfx/color.hpp>
+#include <gfx/renderer.hpp>
+#include <gfx/window.hpp>
 
 int main() {
-    InitWindow(800, 600, "Hello from raylib");
+    auto& window = gfx::Window::create(1600, 900, "Hello from RAII");
 
-    while (!WindowShouldClose()) {
-        BeginDrawing();
+    while (!window.should_close()) {
+        auto renderer = window.renderer();
 
-        ClearBackground(WHITE);
-        DrawText("Hello from raylib", 10, 10, 20, BEIGE);
-
-        EndDrawing();
+        renderer.clear_background(gfx::Colors::Gray);
+        renderer.draw_text(
+            "Hello from RAII renderer",
+            { 100, 100 },
+            50,
+            gfx::Colors::Blue
+        );
     }
-
-    CloseWindow();
-
 }
