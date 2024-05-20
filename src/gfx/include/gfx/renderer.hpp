@@ -1,8 +1,8 @@
 #pragma once
 
-#include <utils/vec2.hpp>
-
 #include "color.hpp"
+#include "utils/rect.hpp"
+#include "utils/vec2.hpp"
 #include "window.hpp"
 
 namespace gfx {
@@ -16,7 +16,7 @@ namespace gfx {
 
     public:
         Renderer(Renderer const&) = delete;
-        Renderer(Renderer&&) = default;
+        Renderer(Renderer&&) = delete;
         Renderer& operator=(Renderer const&) = delete;
         Renderer& operator=(Renderer&&) = delete;
         ~Renderer();
@@ -26,6 +26,13 @@ namespace gfx {
             char const* const text,
             Vec2i const position,
             int const size,
+            Color const color
+        );
+        [[nodiscard]] int measure_text(char const* const text, int const size);
+        void draw_rect_filled(RectI const rect, Color const color);
+        void draw_rect_outline(
+            RectF const rect,
+            float const thickness,
             Color const color
         );
     };

@@ -9,11 +9,20 @@ int main() {
         auto renderer = window.renderer();
 
         renderer.clear_background(gfx::Colors::Gray);
-        renderer.draw_text(
-            "Hello from RAII renderer",
-            { 100, 100 },
-            50,
-            gfx::Colors::Blue
+
+        char const* const text = "Hello from RAII renderer";
+        int const size = 50;
+        int const width = renderer.measure_text(text, size);
+
+        renderer.draw_rect_filled(
+            { 95, 95, width + 10, size + 5 },
+            gfx::Colors::SkyBlue
         );
+        renderer.draw_rect_outline(
+            { 95, 95, static_cast<float>(width + 10), size + 5 },
+            3,
+            gfx::Colors::Black
+        );
+        renderer.draw_text(text, { 100, 100 }, size, gfx::Colors::White);
     }
 }

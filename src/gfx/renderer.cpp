@@ -38,4 +38,32 @@ namespace gfx {
     ) {
         DrawText(text, position.x, position.y, size, to_raylib_color(color));
     }
+
+    [[nodiscard]] int
+        Renderer::measure_text(char const* const text, int const size) {
+        return MeasureText(text, size);
+    }
+
+    void Renderer::draw_rect_filled(RectI const rect, Color const color) {
+        DrawRectangle(
+            rect.origin.x,
+            rect.origin.y,
+            rect.size.x,
+            rect.size.y,
+            to_raylib_color(color)
+        );
+    }
+
+    void Renderer::draw_rect_outline(
+        RectF const rect,
+        float const thickness,
+        Color const color
+    ) {
+        DrawRectangleLinesEx(
+            { rect.origin.x, rect.origin.y, rect.size.x, rect.size.y },
+            thickness,
+            to_raylib_color(color)
+        );
+    }
+
 }  // namespace gfx
