@@ -24,5 +24,7 @@ int main() {
             gfx::Colors::Black
         );
         renderer.draw_text(text, { 100, 100 }, size, gfx::Colors::White);
+
+        renderer.draw_circle_filled({ 300, 300 }, 130, gfx::Colors::White);
     }
 }

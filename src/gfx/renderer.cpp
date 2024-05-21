@@ -5,7 +5,7 @@
 using MyColor = gfx::Color;
 using RayLibColor = Color;
 
-RayLibColor to_raylib_color(MyColor color) {
+static inline constexpr RayLibColor to_raylib_color(MyColor color) {
     return { color.r, color.g, color.b, color.a };
 }
 
@@ -66,4 +66,11 @@ namespace gfx {
         );
     }
 
+    void Renderer::draw_circle_filled(
+        Vec2i const center,
+        int const radius,
+        Color const color
+    ) {
+        DrawCircle(center.x, center.y, radius, to_raylib_color(color));
+    }
 }  // namespace gfx

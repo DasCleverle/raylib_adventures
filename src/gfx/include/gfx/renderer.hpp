@@ -29,9 +29,22 @@ namespace gfx {
             Color const color
         );
         [[nodiscard]] int measure_text(char const* const text, int const size);
+
         void draw_rect_filled(RectI const rect, Color const color);
         void draw_rect_outline(
             RectF const rect,
+            float const thickness,
+            Color const color
+        );
+
+        void draw_circle_filled(
+            Vec2i const center,
+            int const radius,
+            Color const color
+        );
+        void draw_circle_outline(
+            Vec2i const center,
+            int const radius,
             float const thickness,
             Color const color
         );
