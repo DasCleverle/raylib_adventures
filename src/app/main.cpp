@@ -4,6 +4,7 @@
 
 int main() {
     auto& window = gfx::Window::create(1600, 900, "Hello from RAII");
+    window.set_option(gfx::WindowOption::Resizeable, false);
 
     while (!window.should_close()) {
         auto renderer = window.renderer();

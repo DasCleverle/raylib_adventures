@@ -5,6 +5,8 @@
 namespace gfx {
     class Renderer;
 
+    enum class WindowOption { Resizeable = 0 };
+
     class Window final {
         friend class Renderer;
 
@@ -28,6 +30,8 @@ namespace gfx {
         static Window& create(Vec2i size, char const* const title) {
             return create(size.x, size.y, title);
         }
+
+        void set_option(WindowOption const option, bool enabled);
 
         [[nodiscard]] bool should_close() const;
 
