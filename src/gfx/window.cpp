@@ -33,6 +33,10 @@ namespace gfx {
         }
     }
 
+    void Window::set_target_fps(int fps) {
+        SetTargetFPS(fps);
+    }
+
     [[nodiscard]] bool Window::should_close() const {
         return WindowShouldClose();
     }

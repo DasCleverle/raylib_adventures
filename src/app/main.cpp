@@ -4,7 +4,9 @@
 
 int main() {
     auto& window = gfx::Window::create(1600, 900, "Hello from RAII");
+
     window.set_option(gfx::WindowOption::Resizeable, false);
+    window.set_target_fps(60);
 
     while (!window.should_close()) {
         auto renderer = window.renderer();

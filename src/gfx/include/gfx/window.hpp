@@ -33,6 +33,8 @@ namespace gfx {
 
         void set_option(WindowOption const option, bool enabled);
 
+        void set_target_fps(int fps);
+
         [[nodiscard]] bool should_close() const;
 
         [[nodiscard]] Vec2i size() const;
