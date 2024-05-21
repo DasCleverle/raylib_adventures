@@ -1,9 +1,9 @@
-#include <gfx/window.hpp>
+#include "gfx/window.hpp"
 
 #include <raylib.h>
 #include <tl/optional.hpp>
 
-#include <gfx/renderer.hpp>
+#include "gfx/renderer.hpp"
 
 static inline constexpr unsigned int get_flag(gfx::WindowOption option) {
     switch (option) {

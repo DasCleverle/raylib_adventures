@@ -1,6 +1,6 @@
-#include <gfx/color.hpp>
-#include <gfx/renderer.hpp>
-#include <gfx/window.hpp>
+#include "gfx/color.hpp"
+#include "gfx/renderer.hpp"
+#include "gfx/window.hpp"
 
 int main() {
     auto& window = gfx::Window::create(1600, 900, "Hello from RAII");
