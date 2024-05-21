@@ -46,6 +46,8 @@ LineEnding: LF
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 PackConstructorInitializers: NextLine
+PenaltyReturnTypeOnItsOwnLine: 300
+PenaltyExcessCharacter: 20
 PointerAlignment: Left
 QualifierAlignment: Right
 ReferenceAlignment: Pointer

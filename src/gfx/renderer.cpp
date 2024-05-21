@@ -39,8 +39,10 @@ namespace gfx {
         DrawText(text, position.x, position.y, size, to_raylib_color(color));
     }
 
-    [[nodiscard]] int
-        Renderer::measure_text(char const* const text, int const size) {
+    [[nodiscard]] int Renderer::measure_text(
+        char const* const text,
+        int const size
+    ) {
         return MeasureText(text, size);
     }
 
