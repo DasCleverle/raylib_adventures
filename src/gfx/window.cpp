@@ -1,6 +1,7 @@
 #include "gfx/window.hpp"
 
 #include <raylib.h>
+#include <rlgl.h>
 #include <tl/optional.hpp>
 
 #include "gfx/renderer.hpp"
@@ -9,16 +10,19 @@ static inline constexpr unsigned int get_flag(gfx::WindowOption option) {
     switch (option) {
         case gfx::WindowOption::Resizeable:
             return FLAG_WINDOW_RESIZABLE;
+        default:
+            return 0;
     }
 }
 
 namespace gfx {
 
-    Window::Window(int width, int height, char const* const title) {
+    Window::Window(int width, int height, char const* const title)
+        : m_handle{ std::monostate{} } {
         InitWindow(width, height, title);
     }
 
-    Window::~Window() {
+    void Window::Deleter::operator()(std::monostate) const {
         CloseWindow();
     }
 
@@ -47,5 +51,9 @@ namespace gfx {
 
     [[nodiscard]] Renderer Window::renderer() {
         return Renderer{ *this };
+    }
+
+    [[nodiscard]] FontManager& Window::font_manager() {
+        return m_font_manager;
     }
 }  // namespace gfx

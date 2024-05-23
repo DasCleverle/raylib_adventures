@@ -1,5 +1,8 @@
 #pragma once
 
+#include <variant>
+#include "gfx/font_manager.hpp"
+#include "utils/unique_value.hpp"
 #include "utils/vec2.hpp"
 
 namespace gfx {
@@ -11,10 +14,18 @@ namespace gfx {
         friend class Renderer;
 
     private:
+        struct Deleter {
+            void operator()(std::monostate) const;
+        };
+
+        // This member variable must come first so that its
+        // destructor is called last to prevent segfaults
+        // when m_font_manager is destructed.
+        UniqueValue<std::monostate, Deleter> m_handle;
         std::size_t m_renderers;
+        FontManager m_font_manager;
 
         Window(int width, int height, char const* const title);
-        ~Window();
 
     public:
         Window(Window const&) = delete;
@@ -40,5 +51,7 @@ namespace gfx {
         [[nodiscard]] Vec2i size() const;
 
         [[nodiscard]] Renderer renderer();
+
+        [[nodiscard]] FontManager& font_manager();
     };
 }  // namespace gfx

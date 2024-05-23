@@ -4,6 +4,10 @@ add_library(gfx STATIC
     include/gfx/renderer.hpp
     renderer.cpp
     include/gfx/color.hpp
+    include/gfx/font.hpp
+    font.cpp
+    include/gfx/font_manager.hpp
+    font_manager.cpp
 )
 
 target_include_directories(gfx PUBLIC include)
