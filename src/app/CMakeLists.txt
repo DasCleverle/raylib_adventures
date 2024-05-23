@@ -6,3 +6,5 @@ target_link_libraries(app
     game
     gfx
 )
+
+copy_assets(app)

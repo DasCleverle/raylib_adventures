@@ -7,5 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include("${PROJECT_SOURCE_DIR}/dependencies.cmake")
+include("${PROJECT_SOURCE_DIR}/assets.cmake")
 
 add_subdirectory(src bin)
+
