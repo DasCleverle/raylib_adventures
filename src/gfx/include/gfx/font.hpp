@@ -6,11 +6,16 @@
 struct Font;
 
 namespace gfx {
+
     class Renderer;
+
+    template<typename T>
     class FontManager;
 
     class Font {
         friend class Renderer;
+
+        template<typename T>
         friend class FontManager;
 
     private:
@@ -19,14 +24,11 @@ namespace gfx {
         };
 
         std::unique_ptr<::Font, Deleter> m_handle;
+        int m_size;
 
-        Font(std::unique_ptr<::Font, Deleter> handle)
-            : m_handle{ std::move(handle) } {}
+        Font(std::string const& file_name, int font_size);
 
     public:
-        [[nodiscard]] Vec2f measure_text(
-            char const* const text,
-            float const font_size
-        ) const;
+        [[nodiscard]] Vec2f measure_text(char const* const text) const;
     };
 }  // namespace gfx

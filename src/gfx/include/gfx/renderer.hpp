@@ -1,8 +1,10 @@
 #pragma once
 
-#include "color.hpp"
 #include "utils/rect.hpp"
 #include "utils/vec2.hpp"
+
+#include "color.hpp"
+#include "font.hpp"
 #include "window.hpp"
 
 namespace gfx {
@@ -29,10 +31,9 @@ namespace gfx {
             Color const color
         );
         void draw_text(
-            Font const& font,
+            Font const& font_type,
             char const* const text,
             Vec2f const position,
-            int const size,
             Color const color
         );
 

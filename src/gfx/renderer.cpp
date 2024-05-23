@@ -43,14 +43,13 @@ namespace gfx {
         Font const& font,
         char const* const text,
         Vec2f const position,
-        int const size,
         Color const color
     ) {
         DrawTextEx(
             *font.m_handle,
             text,
             { static_cast<float>(position.x), static_cast<float>(position.y) },
-            size,
+            font.m_size,
             0,
             to_raylib_color(color)
         );

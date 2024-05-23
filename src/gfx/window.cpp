@@ -53,7 +53,4 @@ namespace gfx {
         return Renderer{ *this };
     }
 
-    [[nodiscard]] FontManager& Window::font_manager() {
-        return m_font_manager;
-    }
 }  // namespace gfx

@@ -7,7 +7,7 @@ add_library(gfx STATIC
     include/gfx/font.hpp
     font.cpp
     include/gfx/font_manager.hpp
-    font_manager.cpp
+    include/gfx/font_config.hpp
 )
 
 target_include_directories(gfx PUBLIC include)
