@@ -32,21 +32,31 @@ namespace gfx {
 
     void Renderer::draw_text(
         char const* const text,
-        Vec2i position,
+        Vec2f position,
         int size,
         Color color
     ) {
         DrawText(text, position.x, position.y, size, to_raylib_color(color));
     }
 
-    [[nodiscard]] int Renderer::measure_text(
+    void Renderer::draw_text(
+        Font const& font,
         char const* const text,
-        int const size
+        Vec2f const position,
+        int const size,
+        Color const color
     ) {
-        return MeasureText(text, size);
+        DrawTextEx(
+            *font.m_handle,
+            text,
+            { static_cast<float>(position.x), static_cast<float>(position.y) },
+            size,
+            0,
+            to_raylib_color(color)
+        );
     }
 
-    void Renderer::draw_rect_filled(RectI const rect, Color const color) {
+    void Renderer::draw_rect_filled(RectF const rect, Color const color) {
         DrawRectangle(
             rect.origin.x,
             rect.origin.y,
@@ -69,7 +79,7 @@ namespace gfx {
     }
 
     void Renderer::draw_circle_filled(
-        Vec2i const center,
+        Vec2f const center,
         int const radius,
         Color const color
     ) {
