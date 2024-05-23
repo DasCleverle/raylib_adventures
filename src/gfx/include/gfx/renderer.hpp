@@ -24,6 +24,8 @@ namespace gfx {
         ~Renderer();
 
         void clear_background(Color const color);
+        void draw_fps(Vec2f position);
+
         void draw_text(
             char const* const text,
             Vec2f const position,

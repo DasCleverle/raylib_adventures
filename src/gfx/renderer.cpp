@@ -30,6 +30,10 @@ namespace gfx {
         ClearBackground(to_raylib_color(color));
     }
 
+    void Renderer::draw_fps(Vec2f position) {
+        DrawFPS(position.x, position.y);
+    }
+
     void Renderer::draw_text(
         char const* const text,
         Vec2f position,
