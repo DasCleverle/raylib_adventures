@@ -25,7 +25,9 @@ static gfx::FontConfig<FontType> s_font_config = {
 };
 
 Application::Application()
-    : m_window{ 1600, 900, "My cool game" }, m_font_manager{ s_font_config } {}
+    : m_window{ 1600, 900, "My cool game" },
+      m_font_manager{ s_font_config },
+      m_my_test_listener{ std::make_shared<MyTestListener>() } {}
 
 void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);

@@ -7,11 +7,15 @@
 #include "gfx/window.hpp"
 #include "ui/event_dispatcher.hpp"
 
+class MyTestListener;
+
 class Application {
 private:
     gfx::Window m_window;
     gfx::FontManager<FontType> m_font_manager;
     ui::EventDispatcher m_event_dispatcher;
+
+    std::shared_ptr<MyTestListener> m_my_test_listener;
 
     void update();
     void init();
