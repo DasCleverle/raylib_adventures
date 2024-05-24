@@ -1,9 +1,23 @@
 #include "application.hpp"
 
 #include <cstdio>
+#include <memory>
 
 #include "gfx/color.hpp"
 #include "gfx/renderer.hpp"
+#include "ui/event.hpp"
+
+class MyTestListener : public ui::EventListener<ui::KeyboardEvent> {
+    ui::EventListenerResult handle(ui::KeyboardEvent const& event) override {
+        printf(
+            "handling key board event %d, type %d\n",
+            static_cast<int>(event.code),
+            static_cast<int>(event.state)
+        );
+
+        return ui::EventListenerResult::Handled;
+    }
+};
 
 static gfx::FontConfig<FontType> s_font_config = {
     { { FontType::Bitcell, "assets/fonts/bitcell.ttf", 40 } },
@@ -16,9 +30,14 @@ Application::Application()
 void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);
     m_window.set_target_fps(60);
+
+    auto listener = std::make_shared<MyTestListener>();
+    m_event_dispatcher.listen<ui::KeyboardEvent>(listener);
 }
 
 void Application::update() {
+    m_event_dispatcher.poll();
+
     auto renderer = m_window.renderer();
 
     renderer.clear_background(gfx::Colors::Gray);

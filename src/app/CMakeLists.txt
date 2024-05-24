@@ -9,6 +9,7 @@ target_link_libraries(app
     PRIVATE
     game
     gfx
+    ui
 )
 
 copy_assets(app)

@@ -1,4 +1,5 @@
 add_subdirectory(app)
 add_subdirectory(game)
 add_subdirectory(gfx)
+add_subdirectory(ui)
 add_subdirectory(utils)
