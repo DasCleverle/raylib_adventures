@@ -14,12 +14,12 @@ namespace ui {
         std::vector<std::pair<std::type_index, std::any>> m_listeners;
 
         std::vector<int> m_pressed_keys{};
+        std::vector<int> m_mouse_buttons{};
 
-        struct Deleter {
-            EventDispatcher& m_dispatcher;
+        void poll_keyboard();
+        void poll_mouse();
 
-            void operator()(EventListenerBase* ptr) {}
-        };
+        void check_mouse_button(int mouse_button);
 
     public:
         void poll();

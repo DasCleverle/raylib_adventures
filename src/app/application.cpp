@@ -7,11 +7,22 @@
 #include "gfx/renderer.hpp"
 #include "ui/event.hpp"
 
-class MyTestListener : public ui::EventListener<ui::KeyboardEvent> {
+class MyTestListener : public ui::EventListener<ui::KeyboardEvent>,
+                       public ui::EventListener<ui::MouseEvent> {
     ui::EventListenerResult handle(ui::KeyboardEvent const& event) override {
         printf(
             "handling key board event %d, type %d\n",
             static_cast<int>(event.code),
+            static_cast<int>(event.state)
+        );
+
+        return ui::EventListenerResult::Handled;
+    }
+
+    ui::EventListenerResult handle(ui::MouseEvent const& event) override {
+        printf(
+            "handling mouse event board event %d, type %d\n",
+            static_cast<int>(event.button),
             static_cast<int>(event.state)
         );
 
@@ -33,8 +44,8 @@ void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);
     m_window.set_target_fps(60);
 
-    auto listener = std::make_shared<MyTestListener>();
-    m_event_dispatcher.listen<ui::KeyboardEvent>(listener);
+    m_event_dispatcher.listen<ui::KeyboardEvent>(m_my_test_listener);
+    m_event_dispatcher.listen<ui::MouseEvent>(m_my_test_listener);
 }
 
 void Application::update() {
