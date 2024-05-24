@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "event_listener.hpp"
+#include "utils/vec2.hpp"
 
 namespace ui {
 
@@ -15,14 +16,22 @@ namespace ui {
 
         std::vector<int> m_pressed_keys{};
         std::vector<int> m_mouse_buttons{};
+        Vec2i m_mouse_position;
 
         void poll_keyboard();
         void poll_mouse();
+        void poll_mouse_move();
+        void poll_mouse_wheel();
 
         void check_mouse_button(int mouse_button);
 
     public:
-        void poll();
+        void poll() {
+            poll_keyboard();
+            poll_mouse();
+            poll_mouse_move();
+            poll_mouse_wheel();
+        }
 
         template<typename T, std::derived_from<EventListener<T>> L>
         void listen(std::shared_ptr<L> const& listener) {

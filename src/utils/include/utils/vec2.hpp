@@ -7,6 +7,14 @@ struct Vec2 final {
     T x;
     T y;
 
+    static constexpr Vec2<T> zero() {
+        return Vec2<T>{};
+    }
+
+    static constexpr Vec2<T> unit() {
+        return Vec2<T>{ static_cast<T>(1), static_cast<T>(1) };
+    }
+
     constexpr Vec2(T x, T y) : x{ x }, y{ y } {}
 
     constexpr Vec2() : x{}, y{} {}

@@ -8,7 +8,9 @@
 #include "ui/event.hpp"
 
 class MyTestListener : public ui::EventListener<ui::KeyboardEvent>,
-                       public ui::EventListener<ui::MouseEvent> {
+                       public ui::EventListener<ui::MouseEvent>,
+                       public ui::EventListener<ui::MouseMoveEvent>,
+                       public ui::EventListener<ui::MouseWheelEvent> {
     ui::EventListenerResult handle(ui::KeyboardEvent const& event) override {
         printf(
             "handling key board event %d, type %d\n",
@@ -21,9 +23,33 @@ class MyTestListener : public ui::EventListener<ui::KeyboardEvent>,
 
     ui::EventListenerResult handle(ui::MouseEvent const& event) override {
         printf(
-            "handling mouse event board event %d, type %d\n",
+            "handling mouse button event %d, type %d\n",
             static_cast<int>(event.button),
             static_cast<int>(event.state)
+        );
+
+        return ui::EventListenerResult::Handled;
+    }
+
+    ui::EventListenerResult handle(ui::MouseMoveEvent const& event) override {
+        printf(
+            "handling mouse move event from %d,%d to %d,%d (delta %d,%d)\n",
+            event.origin.x,
+            event.origin.y,
+            event.target.x,
+            event.target.y,
+            event.delta.x,
+            event.delta.y
+        );
+
+        return ui::EventListenerResult::Handled;
+    }
+
+    ui::EventListenerResult handle(ui::MouseWheelEvent const& event) override {
+        printf(
+            "handling mouse wheel event, direction: %d, %d \n",
+            event.delta.x,
+            event.delta.y
         );
 
         return ui::EventListenerResult::Handled;
@@ -46,6 +72,8 @@ void Application::init() {
 
     m_event_dispatcher.listen<ui::KeyboardEvent>(m_my_test_listener);
     m_event_dispatcher.listen<ui::MouseEvent>(m_my_test_listener);
+    m_event_dispatcher.listen<ui::MouseMoveEvent>(m_my_test_listener);
+    m_event_dispatcher.listen<ui::MouseWheelEvent>(m_my_test_listener);
 }
 
 void Application::update() {

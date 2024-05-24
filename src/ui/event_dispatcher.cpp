@@ -6,11 +6,7 @@
 #include "ui/event.hpp"
 #include "ui/keycode.hpp"
 #include "ui/keystate.hpp"
-
-template<typename T>
-static bool contains(std::vector<T> const& v, T item) {
-    return std::find(v.begin(), v.end(), item) != v.end();
-}
+#include "utils/vec2.hpp"
 
 namespace ui {
 
@@ -67,9 +63,28 @@ namespace ui {
         }
     }
 
-    void EventDispatcher::poll() {
-        poll_keyboard();
-        poll_mouse();
+    void EventDispatcher::poll_mouse_move() {
+        Vec2i current_pos{ GetMouseX(), GetMouseY() };
+        Vec2i delta = current_pos - m_mouse_position;
+
+        if (delta == Vec2i::zero()) {
+            return;
+        }
+
+        publish(MouseMoveEvent{ m_mouse_position, current_pos, delta });
+        m_mouse_position = current_pos;
+    }
+
+    void EventDispatcher::poll_mouse_wheel() {
+        auto mouse_wheel = GetMouseWheelMoveV();
+        auto converted = Vec2i{ static_cast<int>(mouse_wheel.x),
+                                static_cast<int>(mouse_wheel.y) };
+
+        if (converted == Vec2i::zero()) {
+            return;
+        }
+
+        publish(MouseWheelEvent{ converted });
     }
 
 }  // namespace ui
