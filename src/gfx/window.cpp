@@ -18,7 +18,7 @@ static inline constexpr unsigned int get_flag(gfx::WindowOption option) {
 namespace gfx {
 
     Window::Window(int width, int height, char const* const title)
-        : m_handle{ std::monostate{} } {
+        : m_handle{std::monostate{}} {
         InitWindow(width, height, title);
     }
 
@@ -46,11 +46,11 @@ namespace gfx {
     }
 
     [[nodiscard]] Vec2i Window::size() const {
-        return { GetScreenWidth(), GetScreenHeight() };
+        return {GetScreenWidth(), GetScreenHeight()};
     }
 
     [[nodiscard]] Renderer Window::renderer() {
-        return Renderer{ *this };
+        return Renderer{*this};
     }
 
 }  // namespace gfx

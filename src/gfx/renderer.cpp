@@ -6,11 +6,13 @@ using MyColor = gfx::Color;
 using RayLibColor = Color;
 
 static inline constexpr RayLibColor to_raylib_color(MyColor color) {
-    return { color.r, color.g, color.b, color.a };
+    return {color.r, color.g, color.b, color.a};
 }
 
 namespace gfx {
-    Renderer::Renderer(Window& window) : m_window{ window } {
+    Renderer::Renderer(Window& window)
+        : m_window{window} {
+
         window.m_renderers++;
 
         if (window.m_renderers == 1) {
@@ -34,12 +36,7 @@ namespace gfx {
         DrawFPS(position.x, position.y);
     }
 
-    void Renderer::draw_text(
-        char const* const text,
-        Vec2f position,
-        int size,
-        Color color
-    ) {
+    void Renderer::draw_text(char const* const text, Vec2f position, int size, Color color) {
         DrawText(text, position.x, position.y, size, to_raylib_color(color));
     }
 
@@ -52,7 +49,7 @@ namespace gfx {
         DrawTextEx(
             *font.m_handle,
             text,
-            { static_cast<float>(position.x), static_cast<float>(position.y) },
+            {static_cast<float>(position.x), static_cast<float>(position.y)},
             font.m_size,
             0,
             to_raylib_color(color)
@@ -60,32 +57,18 @@ namespace gfx {
     }
 
     void Renderer::draw_rect_filled(RectF const rect, Color const color) {
-        DrawRectangle(
-            rect.origin.x,
-            rect.origin.y,
-            rect.size.x,
-            rect.size.y,
-            to_raylib_color(color)
-        );
+        DrawRectangle(rect.origin.x, rect.origin.y, rect.size.x, rect.size.y, to_raylib_color(color));
     }
 
-    void Renderer::draw_rect_outline(
-        RectF const rect,
-        float const thickness,
-        Color const color
-    ) {
+    void Renderer::draw_rect_outline(RectF const rect, float const thickness, Color const color) {
         DrawRectangleLinesEx(
-            { rect.origin.x, rect.origin.y, rect.size.x, rect.size.y },
+            {rect.origin.x, rect.origin.y, rect.size.x, rect.size.y},
             thickness,
             to_raylib_color(color)
         );
     }
 
-    void Renderer::draw_circle_filled(
-        Vec2f const center,
-        int const radius,
-        Color const color
-    ) {
+    void Renderer::draw_circle_filled(Vec2f const center, int const radius, Color const color) {
         DrawCircle(center.x, center.y, radius, to_raylib_color(color));
     }
 }  // namespace gfx

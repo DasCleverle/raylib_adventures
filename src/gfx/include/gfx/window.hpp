@@ -20,7 +20,7 @@ namespace gfx {
         // This member variable must come first so that its
         // destructor is called last to prevent segfaults
         UniqueValue<std::monostate, Deleter> m_handle;
-        std::size_t m_renderers{ 0 };
+        std::size_t m_renderers{0};
 
     public:
         Window(int width, int height, char const* const title);

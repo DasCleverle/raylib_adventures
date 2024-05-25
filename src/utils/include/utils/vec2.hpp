@@ -12,17 +12,19 @@ struct Vec2 final {
     }
 
     static constexpr Vec2<T> unit() {
-        return Vec2<T>{ static_cast<T>(1), static_cast<T>(1) };
+        return Vec2<T>{static_cast<T>(1), static_cast<T>(1)};
     }
 
-    constexpr Vec2(T x, T y) : x{ x }, y{ y } {}
+    constexpr Vec2(T x, T y)
+        : x{x}, y{y} {}
 
-    constexpr Vec2() : x{}, y{} {}
+    constexpr Vec2()
+        : x{}, y{} {}
 
     template<Numeric U>
     requires(not std::same_as<T, U>)
     constexpr explicit Vec2(Vec2<U> const other)
-        : x{ static_cast<T>(other.x) }, y{ static_cast<T>(other.y) } {}
+        : x{static_cast<T>(other.x)}, y{static_cast<T>(other.y)} {}
 
     constexpr Vec2 operator+(Vec2 const& other) const {
         return Vec2(x + other.x, y + other.y);

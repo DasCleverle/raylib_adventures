@@ -23,8 +23,6 @@ namespace ui {
         void poll_mouse_move();
         void poll_mouse_wheel();
 
-        void check_mouse_button(int mouse_button);
-
     public:
         void poll() {
             poll_keyboard();
@@ -35,10 +33,7 @@ namespace ui {
 
         template<typename T, std::derived_from<EventListener<T>> L>
         void listen(std::shared_ptr<L> const& listener) {
-            m_listeners.emplace_back(
-                typeid(T),
-                std::weak_ptr<EventListener<T>>{ listener }
-            );
+            m_listeners.emplace_back(typeid(T), std::weak_ptr<EventListener<T>>{listener});
         }
 
         template<typename T>

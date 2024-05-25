@@ -20,9 +20,7 @@ namespace gfx {
             for (auto const& definition : config.fonts) {
                 m_fonts.emplace(
                     definition.font_type,
-                    std::make_unique<Font>(
-                        Font(definition.file_path, definition.font_size)
-                    )
+                    std::make_unique<Font>(Font{definition.file_path, definition.font_size})
                 );
             }
 

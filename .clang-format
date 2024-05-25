@@ -20,14 +20,17 @@ BreakBeforeBraces: Custom
 BraceWrapping:
   BeforeCatch: true
   BeforeElse: true
+  AfterControlStatement: MultiLine
+  BeforeLambdaBody: false
 BreakAfterAttributes: Leave
+BreakArrays: true
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeConceptDeclarations: Always
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 ContinuationIndentWidth: 4
-ColumnLimit: 80
-Cpp11BracedListStyle: false
+ColumnLimit: 100
+Cpp11BracedListStyle: true
 EmptyLineAfterAccessModifier: Leave
 EmptyLineBeforeAccessModifier: LogicalBlock
 IncludeBlocks: Preserve
@@ -40,12 +43,13 @@ IndentRequiresClause: false
 IndentWidth: 4
 IndentWrappedFunctionNames: true
 InsertNewlineAtEOF: true
+KeepEmptyLinesAtTheStartOfBlocks: true
 LambdaBodyIndentation: Signature
 Language: Cpp
 LineEnding: LF
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
-PackConstructorInitializers: NextLine
+PackConstructorInitializers: NextLineOnly
 PenaltyReturnTypeOnItsOwnLine: 300
 PenaltyExcessCharacter: 20
 PointerAlignment: Left

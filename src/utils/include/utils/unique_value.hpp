@@ -9,8 +9,7 @@
 #if _MSC_VER >= 1929
 #define CAT_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
 #else
-#error \
-    "MSVC compiler not capable of applying [[msvc::no_unique_address]], upgrade your compiler"
+#error "MSVC compiler not capable of applying [[msvc::no_unique_address]], upgrade your compiler"
 #endif
 #else
 #define CAT_NO_UNIQUE_ADDRESS [[no_unique_address]]
@@ -44,17 +43,17 @@ private:
 
 public:
     explicit UniqueValue(T value)
-        : UniqueValue{ std::move(value), Deleter{} } {}
+        : UniqueValue{std::move(value), Deleter{}} {}
 
     UniqueValue(T value, Deleter deleter)
-        : m_value{ std::move(value) }, m_deleter{ std::move(deleter) } {}
+        : m_value{std::move(value)}, m_deleter{std::move(deleter)} {}
 
     UniqueValue(UniqueValue const& other) = delete;
     UniqueValue& operator=(UniqueValue const& other) = delete;
 
     UniqueValue(UniqueValue&& other) noexcept
-        : m_value{ std::exchange(other.m_value, std::nullopt) },
-          m_deleter{ std::move(other.m_deleter) } {}
+        : m_value{std::exchange(other.m_value, std::nullopt)},
+          m_deleter{std::move(other.m_deleter)} {}
 
     UniqueValue& operator=(UniqueValue&& other) noexcept {
         if (this == std::addressof(other)) {
@@ -71,8 +70,7 @@ public:
         // (almost?) guaranteed to be instantiated when this class template is
         // instantiated
         static_assert(
-            sizeof(UniqueValue) == sizeof(std::optional<T>)
-                or not std::is_empty_v<Deleter>,
+            sizeof(UniqueValue) == sizeof(std::optional<T>) or not std::is_empty_v<Deleter>,
             "compiler did not successfully apply [[no_unique_address]] "
             "attribute"
         );

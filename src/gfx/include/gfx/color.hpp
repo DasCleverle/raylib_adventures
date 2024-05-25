@@ -11,13 +11,8 @@ namespace gfx {
 
         constexpr Color() {}
 
-        constexpr Color(
-            std::uint8_t r,
-            std::uint8_t g,
-            std::uint8_t b,
-            std::uint8_t a
-        )
-            : r{ r }, g{ g }, b{ b }, a{ a } {}
+        constexpr Color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a)
+            : r{r}, g{g}, b{b}, a{a} {}
     };
 
     struct Colors {  // clang-format off
