@@ -1,7 +1,7 @@
 from conan import ConanFile
 from conan.tools.cmake import cmake_layout, CMakeToolchain
 
-class CleverlesAttackingRecipe(ConanFile):
+class RaylibAdventuresRecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "CMakeDeps"
     build_policy = "missing"
