@@ -12,7 +12,7 @@ namespace gfx {
     template<typename T>
     class FontManager;
 
-    class Font {
+    class Font final {
         friend class Renderer;
 
         template<typename T>

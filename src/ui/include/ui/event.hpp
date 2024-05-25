@@ -6,23 +6,23 @@
 #include "utils/vec2.hpp"
 
 namespace ui {
-    struct KeyboardEvent {
+    struct KeyboardEvent final {
         KeyCode code;
         KeyState state;
     };
 
-    struct MouseEvent {
+    struct MouseEvent final {
         MouseButton button;
         KeyState state;
     };
 
-    struct MouseMoveEvent {
+    struct MouseMoveEvent final {
         Vec2i origin;
         Vec2i target;
         Vec2i delta;
     };
 
-    struct MouseWheelEvent {
+    struct MouseWheelEvent final {
         Vec2i delta;
     };
 }  // namespace ui

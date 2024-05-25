@@ -9,7 +9,7 @@
 
 class MyTestListener;
 
-class Application {
+class Application final {
 private:
     gfx::Window m_window;
     gfx::FontManager<FontType> m_font_manager;

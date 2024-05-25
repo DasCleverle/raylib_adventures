@@ -10,7 +10,7 @@
 namespace gfx {
 
     template<typename T>
-    class FontManager {
+    class FontManager final {
     private:
         std::unordered_map<T, std::unique_ptr<Font>> m_fonts;
         Font const* m_default_font;

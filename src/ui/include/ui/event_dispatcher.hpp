@@ -10,7 +10,7 @@
 
 namespace ui {
 
-    class EventDispatcher {
+    class EventDispatcher final {
     private:
         std::vector<std::pair<std::type_index, std::any>> m_listeners;
 
