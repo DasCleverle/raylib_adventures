@@ -29,10 +29,17 @@ struct Rect final {
         return Rect{0, 0, 1, 1};
     }
 
-    [[nodiscard]] constexpr Rect to_absolute(Rect const other) const {
+    [[nodiscard]] constexpr Rect to_absolute(Rect const reference) const {
         return Rect{
-            other.origin + other.size.hadamard_product(origin),
-            other.size.hadamard_product(size),
+            reference.origin + reference.size.hadamard_product(origin),
+            reference.size.hadamard_product(size),
+        };
+    }
+
+    [[nodiscard]] constexpr Vec2<T> center() const {
+        return Vec2{
+            origin.x + size.x / 2,
+            origin.y + size.y / 2,
         };
     }
 };
