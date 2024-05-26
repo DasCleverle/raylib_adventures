@@ -16,14 +16,24 @@ struct Rect final {
     constexpr Rect(Vec2<T> const origin, T const width, T const height)
         : origin{origin}, size{width, height} {}
 
+    constexpr Rect(Vec2<T> const origin, Vec2<T> const size)
+        : origin{origin}, size{size} {}
+
     template<Numeric U>
     requires(not std::same_as<T, U>)
     constexpr explicit Rect(Rect<U> const& other)
         : origin{static_cast<T>(other.origin.x), static_cast<T>(other.origin.y)},
           size{static_cast<T>(other.size.x), static_cast<T>(other.size.y)} {}
 
-    [[nodiscard]] static constexpr Rect<T> unit() {
+    [[nodiscard]] static constexpr Rect unit() {
         return Rect{0, 0, 1, 1};
+    }
+
+    [[nodiscard]] constexpr Rect to_absolute(Rect const other) const {
+        return Rect{
+            other.origin + other.size.hadamard_product(origin),
+            other.size.hadamard_product(size),
+        };
     }
 };
 

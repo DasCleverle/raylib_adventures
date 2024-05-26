@@ -26,6 +26,10 @@ struct Vec2 final {
     constexpr explicit Vec2(Vec2<U> const other)
         : x{static_cast<T>(other.x)}, y{static_cast<T>(other.y)} {}
 
+    [[nodiscard]] constexpr Vec2 hadamard_product(Vec2 const other) const {
+        return Vec2{x * other.x, y * other.y};
+    }
+
     constexpr Vec2 operator+(Vec2 const& other) const {
         return Vec2(x + other.x, y + other.y);
     }
