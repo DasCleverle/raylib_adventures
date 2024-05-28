@@ -6,6 +6,7 @@
 #include "gfx/font_manager.hpp"
 #include "gfx/window.hpp"
 #include "ui/event_dispatcher.hpp"
+#include "ui/panel.hpp"
 
 class MyTestListener;
 
@@ -15,7 +16,7 @@ private:
     gfx::FontManager<FontType> m_font_manager;
     ui::EventDispatcher m_event_dispatcher;
 
-    std::shared_ptr<MyTestListener> m_my_test_listener;
+    std::unique_ptr<ui::Panel> m_ui_panel;
 
     void update();
     void init();

@@ -42,6 +42,11 @@ struct Rect final {
             origin.y + size.y / 2,
         };
     }
+
+    [[nodiscard]] constexpr bool contains(Vec2<T> position) const {
+        return position.x >= origin.x and position.y >= origin.y and position.x <= origin.x + size.x
+               and position.y <= origin.y + size.y;
+    }
 };
 
 using RectI = Rect<int>;

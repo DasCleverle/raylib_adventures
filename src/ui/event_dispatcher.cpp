@@ -9,7 +9,7 @@
 #include "ui/keystate.hpp"
 #include "utils/vec2.hpp"
 
-static constexpr auto s_mouse_buttons = std::array{
+static inline constexpr auto s_mouse_buttons = std::array{
     MOUSE_BUTTON_LEFT,
     MOUSE_BUTTON_RIGHT,
     MOUSE_BUTTON_MIDDLE,
@@ -42,11 +42,18 @@ namespace ui {
     }
 
     void EventDispatcher::poll_mouse() {
+        auto rl_pos = GetMousePosition();
+        Vec2i position{static_cast<int>(rl_pos.x), static_cast<int>(rl_pos.y)};
+
         for (auto it = m_mouse_buttons.begin(); it != m_mouse_buttons.end();) {
             int mouse_button = *it;
 
             if (IsMouseButtonReleased(mouse_button)) {
-                publish(MouseEvent{static_cast<MouseButton>(mouse_button), KeyState::Released});
+                publish(MouseEvent{
+                    static_cast<MouseButton>(mouse_button),
+                    KeyState::Released,
+                    position,
+                });
                 it = m_mouse_buttons.erase(it);
             }
             else {
@@ -57,7 +64,11 @@ namespace ui {
         for (auto mouse_button : s_mouse_buttons) {
             if (IsMouseButtonPressed(mouse_button)) {
                 m_mouse_buttons.push_back(mouse_button);
-                publish(MouseEvent{static_cast<MouseButton>(mouse_button), KeyState::Pressed});
+                publish(MouseEvent{
+                    static_cast<MouseButton>(mouse_button),
+                    KeyState::Pressed,
+                    position,
+                });
             }
         }
     }
@@ -76,14 +87,17 @@ namespace ui {
     }
 
     void EventDispatcher::poll_mouse_wheel() {
-        auto mouse_wheel = GetMouseWheelMoveV();
-        auto converted = Vec2i{static_cast<int>(mouse_wheel.x), static_cast<int>(mouse_wheel.y)};
+        auto rl_delta = GetMouseWheelMoveV();
+        auto rl_pos = GetMousePosition();
 
-        if (converted == Vec2i::zero()) {
+        auto position = Vec2i{static_cast<int>(rl_pos.x), static_cast<int>(rl_pos.y)};
+        auto delta = Vec2i{static_cast<int>(rl_delta.x), static_cast<int>(rl_delta.y)};
+
+        if (delta == Vec2i::zero()) {
             return;
         }
 
-        publish(MouseWheelEvent{converted});
+        publish(MouseWheelEvent{position, delta});
     }
 
 }  // namespace ui

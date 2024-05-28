@@ -14,6 +14,7 @@ namespace ui {
     struct MouseEvent final {
         MouseButton button;
         KeyState state;
+        Vec2i position;
     };
 
     struct MouseMoveEvent final {
@@ -23,6 +24,7 @@ namespace ui {
     };
 
     struct MouseWheelEvent final {
+        Vec2i position;
         Vec2i delta;
     };
 }  // namespace ui

@@ -21,7 +21,7 @@ namespace ui {
             return m_area;
         }
 
-        void set_area(RectF area) {
+        virtual void set_area(RectF area) {
             m_area = area;
         }
     };
