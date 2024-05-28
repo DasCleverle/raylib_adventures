@@ -1,7 +1,6 @@
 #pragma once
 
 #include <any>
-#include <memory>
 #include <typeindex>
 #include <vector>
 
@@ -24,6 +23,12 @@ namespace ui {
         void poll_mouse_wheel();
 
     public:
+        EventDispatcher() = default;
+        EventDispatcher(EventDispatcher const&) = delete;
+        EventDispatcher(EventDispatcher&&) = default;
+        EventDispatcher& operator=(EventDispatcher const&) = delete;
+        EventDispatcher& operator=(EventDispatcher&&) = default;
+
         void poll() {
             poll_keyboard();
             poll_mouse();
@@ -32,12 +37,12 @@ namespace ui {
         }
 
         template<typename T, std::derived_from<EventListener<T>> L>
-        void listen(std::shared_ptr<L> const& listener) {
-            m_listeners.emplace_back(typeid(T), std::weak_ptr<EventListener<T>>{listener});
+        void listen(L& listener) {
+            m_listeners.emplace_back(typeid(T), static_cast<EventListener<T>*>(&listener));
         }
 
-        template<typename T>
-        void unlisten(EventListener<T> const& listener) {
+        template<typename T, std::derived_from<EventListener<T>> L>
+        void unlisten(L& listener) {
             for (auto it = m_listeners.begin(); it != m_listeners.end();) {
                 auto const& [type, l] = *it;
 
@@ -46,11 +51,13 @@ namespace ui {
                     continue;
                 }
 
-                std::weak_ptr<EventListener<T>> ptr =
-                    std::any_cast<std::weak_ptr<EventListener<T>>>(l);
+                auto const ptr = std::any_cast<EventListener<T>*>(l);
 
-                if (ptr.expired() || ptr.lock() == listener) {
+                if (ptr == nullptr or ptr == &listener) {
                     it = m_listeners.erase(it);
+                }
+                else {
+                    it++;
                 }
             }
         }
@@ -65,15 +72,14 @@ namespace ui {
                     continue;
                 }
 
-                std::weak_ptr<EventListener<T>> ptr =
-                    std::any_cast<std::weak_ptr<EventListener<T>>>(listener);
+                auto ptr = std::any_cast<EventListener<T>*>(listener);
 
-                if (ptr.expired()) {
+                if (ptr == nullptr) {
                     it = m_listeners.erase(it);
                     continue;
                 }
 
-                auto const result = ptr.lock()->handle(event);
+                auto const result = ptr->handle(event);
 
                 if (result == EventListenerResult::Handled) {
                     break;
