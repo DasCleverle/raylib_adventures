@@ -13,17 +13,19 @@ namespace gfx {
 
     Font::Font(std::string const& file_name, int font_size)
         : m_size{font_size} {
-        ::Font const raylib_font = LoadFont(file_name.c_str());
+        ::Font const raylib_font = LoadFontEx(file_name.c_str(), font_size, nullptr, 0);
 
         if (not IsFontReady(raylib_font) or raylib_font.texture.id == GetFontDefault().texture.id) {
             throw std::runtime_error{std::format("failed to load font '{}'", file_name)};
         }
 
+        SetTextureFilter(raylib_font.texture, TEXTURE_FILTER_BILINEAR);
+
         m_handle = std::unique_ptr<::Font, Font::Deleter>{new ::Font{raylib_font}};
     }
 
     [[nodiscard]] Vec2f Font::measure_text(char const* const text) const {
-        auto const size = MeasureTextEx(*m_handle, text, m_size, 0.0);
+        auto const size = MeasureTextEx(*m_handle, text, m_size, 0.0f);
         return Vec2f{size.x, size.y};
     }
 
