@@ -51,5 +51,33 @@ namespace ui {
                 widget->render(renderer);
             }
         }
+
+        tl::optional<Widget const&> find_widget(std::string_view id) const override {
+            if (auto const found = Widget::find_widget(id)) {
+                return found;
+            }
+
+            for (auto const& widget : m_widgets) {
+                if (auto const found = widget->find_widget(id)) {
+                    return found.value();
+                }
+            }
+
+            return tl::nullopt;
+        }
+
+        tl::optional<Widget&> find_widget(std::string_view id) override {
+            if (auto const found = Widget::find_widget(id)) {
+                return found;
+            }
+
+            for (auto const& widget : m_widgets) {
+                if (auto found = widget->find_widget(id)) {
+                    return found.value();
+                }
+            }
+
+            return tl::nullopt;
+        }
     };
 }  // namespace ui

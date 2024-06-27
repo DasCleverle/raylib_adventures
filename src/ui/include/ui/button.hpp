@@ -17,21 +17,35 @@ namespace ui {
         gfx::Color m_hover_color{gfx::Colors::Gray};
         gfx::Color m_click_color{gfx::Colors::Blue};
 
-        EventDispatcher& m_event_dispatcher;
+        EventDispatcher* m_event_dispatcher;
         bool m_is_hovered{false};
         bool m_is_mouse_downed{false};
 
     public:
         Button(
-            std::string text,
+            std::string&& id,
+            std::string&& text,
             gfx::Font const& font,
-            gfx::Color const color,
             EventDispatcher& event_dispatcher
         );
+        Button(std::string&& text, gfx::Font const& font, EventDispatcher& event_dispatcher);
+
+        Button(Button const&) = delete;
+        Button& operator=(Button const&) = delete;
+        Button(Button&&) = default;
+        Button& operator=(Button&&) = default;
         ~Button();
 
         void set_color(gfx::Color const color) {
             m_color = color;
+        }
+
+        void set_hover_color(gfx::Color const color) {
+            m_hover_color = color;
+        }
+
+        void set_click_color(gfx::Color const color) {
+            m_click_color = color;
         }
 
         void render(gfx::Renderer& renderer) const override;

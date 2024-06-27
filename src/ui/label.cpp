@@ -2,9 +2,14 @@
 #include <cassert>
 #include <functional>
 
+static inline std::string get_next_label_id() {
+    static int counter = 0;
+    return std::format("button_{}", counter++);
+}
+
 namespace ui {
     Label::Label(std::string text, gfx::Font const& font)
-        : m_text{std::move(text)}, m_font{&font} {}
+        : Widget{get_next_label_id()}, m_text{std::move(text)}, m_font{&font} {}
 
     void Label::render(gfx::Renderer& renderer) const {
         auto const text_size = m_font->measure_text(m_text.c_str());
