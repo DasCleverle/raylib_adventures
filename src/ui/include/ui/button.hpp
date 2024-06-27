@@ -36,7 +36,7 @@ namespace ui {
 
         void render(gfx::Renderer& renderer) const override;
 
-        void set_area(RectF area) override {
+        void set_area(RectI const area) override {
             Widget::set_area(area);
             m_label.set_area(area);
         }

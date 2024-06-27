@@ -12,7 +12,7 @@ namespace ui {
         auto const x = std::invoke([&]() {
             switch (m_align) {
                 case ui::HorizontalAlign::Left:
-                    return area().origin.x;
+                    return static_cast<float>(area().origin.x);
 
                 case ui::HorizontalAlign::Center:
                     return (area().center() - text_size / 2).x;
@@ -27,7 +27,7 @@ namespace ui {
         auto const y = std::invoke([&] {
             switch (m_vertical_align) {
                 case ui::VerticalAlign::Top:
-                    return area().origin.y;
+                    return static_cast<float>(area().origin.y);
 
                 case ui::VerticalAlign::Middle:
                     return (area().center() - text_size / 2).y;

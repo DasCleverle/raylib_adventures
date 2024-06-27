@@ -42,13 +42,13 @@ namespace ui {
     }
 
     EventListenerResult Button::handle(MouseMoveEvent const& event) {
-        m_is_hovered = area().contains(Vec2f{event.target});
+        m_is_hovered = area().contains(event.target);
         return EventListenerResult::Continue;
     }
 
     EventListenerResult Button::handle(MouseEvent const& event) {
         m_is_mouse_downed = event.state == KeyState::Pressed and event.button == MouseButton::Left
-                            and area().contains(Vec2f{event.position});
+                            and area().contains(event.position);
         return EventListenerResult::Continue;
     }
 

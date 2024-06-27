@@ -21,7 +21,7 @@ struct Rect final {
 
     template<Numeric U>
     requires(not std::same_as<T, U>)
-    constexpr explicit Rect(Rect<U> const& other)
+    constexpr Rect(Rect<U> const& other)
         : origin{static_cast<T>(other.origin.x), static_cast<T>(other.origin.y)},
           size{static_cast<T>(other.size.x), static_cast<T>(other.size.y)} {}
 

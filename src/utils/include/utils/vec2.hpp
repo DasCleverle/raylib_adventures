@@ -109,3 +109,47 @@ struct Vec2 final {
 
 using Vec2i = Vec2<int>;
 using Vec2f = Vec2<float>;
+
+inline Vec2f operator+(Vec2f const a, Vec2i const b) {
+    return Vec2{a.x + b.x, a.y + b.y};
+}
+
+inline Vec2f operator+(Vec2i const a, Vec2f const b) {
+    return Vec2{a.x + b.x, a.y + b.y};
+}
+
+inline Vec2f operator+=(Vec2f a, Vec2i const b) {
+    a.x += b.x;
+    a.y += b.y;
+
+    return a;
+}
+
+inline Vec2i operator+=(Vec2i a, Vec2f const b) {
+    a.x += b.x;
+    a.y += b.y;
+
+    return a;
+}
+
+inline Vec2f operator-(Vec2f const a, Vec2i const b) {
+    return Vec2{a.x - b.x, a.y - b.y};
+}
+
+inline Vec2f operator-(Vec2i const a, Vec2f const b) {
+    return Vec2{a.x - b.x, a.y - b.y};
+}
+
+inline Vec2f operator-=(Vec2f a, Vec2i const b) {
+    a.x -= b.x;
+    a.y -= b.y;
+
+    return a;
+}
+
+inline Vec2i operator-=(Vec2i a, Vec2f const b) {
+    a.x -= b.x;
+    a.y -= b.y;
+
+    return a;
+}

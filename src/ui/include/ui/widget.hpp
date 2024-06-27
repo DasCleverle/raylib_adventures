@@ -5,23 +5,24 @@
 namespace ui {
     class Widget {
     private:
-        RectF m_area;
+        RectI m_area;
 
     public:
         Widget() = default;
+
         Widget(Widget const&) = delete;
-        Widget(Widget&&) = default;
         Widget& operator=(Widget const&) = delete;
+        Widget(Widget&&) = default;
         Widget& operator=(Widget&&) = default;
         virtual ~Widget() = default;
 
         virtual void render(gfx::Renderer& renderer) const = 0;
 
-        [[nodiscard]] RectF area() const {
+        [[nodiscard]] RectI area() const {
             return m_area;
         }
 
-        virtual void set_area(RectF area) {
+        virtual void set_area(RectI const area) {
             m_area = area;
         }
     };
