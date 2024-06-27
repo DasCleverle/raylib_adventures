@@ -7,6 +7,6 @@ namespace ui {
 
     public:
         virtual ~Layout() = default;
-        virtual void recalc(ui::Panel& panel) = 0;
+        virtual void recalc(ui::Panel& panel) const = 0;
     };
 }  // namespace ui

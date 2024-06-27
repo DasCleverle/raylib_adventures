@@ -13,7 +13,7 @@ namespace ui {
         ColumnLayout(std::size_t column_count)
             : m_column_count{column_count} {}
 
-        void recalc(ui::Panel& panel) override {
+        void recalc(ui::Panel& panel) const override {
             auto const area_count = panel.m_widgets.size();
 
             if (area_count == 0) {
