@@ -1,28 +1,36 @@
 #pragma once
 
 #include <cassert>
+#include <print>
 #include <tl/optional.hpp>
 #include <vector>
 
 #include "gfx/color.hpp"
 #include "gfx/renderer.hpp"
 #include "layout.hpp"
+#include "ui/event_listener.hpp"
 #include "widget.hpp"
 
 namespace ui {
     class ColumnLayout;
 
-    class Panel final : public Widget {
+    class Panel final : public Widget, public GenericEventListener {
         friend class ColumnLayout;
 
     private:
         tl::optional<gfx::Color> m_background_color{tl::nullopt};
-        std::vector<std::shared_ptr<Widget>> m_widgets;
+        std::vector<std::unique_ptr<Widget>> m_widgets;
         std::unique_ptr<Layout> m_layout;
 
+        template<typename T>
+        void add_widget_core(T&& widget) {
+            m_widgets.emplace_back(std::make_unique<std::remove_reference_t<T>>(std::move(widget)));
+        }
+
     public:
-        Panel(std::unique_ptr<Layout> layout)
-            : m_layout{std::move(layout)} {}
+        template<std::derived_from<Layout> L>
+        Panel(std::string&& id, L&& layout)
+            : Widget{std::move(id)}, m_layout{std::make_unique<L>(std::move(layout))} {}
 
         void set_background_color(gfx::Color const color) {
             m_background_color = color;
@@ -32,9 +40,10 @@ namespace ui {
             m_background_color = tl::nullopt;
         }
 
-        template<std::convertible_to<std::shared_ptr<Widget>>... Widgets>
+        template<class... Widgets>
+        requires(std::derived_from<Widgets, Widget> && ...)
         void add_widgets(Widgets&&... widgets) {
-            (m_widgets.emplace_back(widgets), ...);
+            (add_widget_core(std::move(widgets)), ...);
             recalc_layout();
         }
 
@@ -78,6 +87,20 @@ namespace ui {
             }
 
             return tl::nullopt;
+        }
+
+        EventListenerResult handle(Event const& event) override {
+            for (auto const& widget : m_widgets) {
+                if (auto listener = dynamic_cast<GenericEventListener*>(widget.get())) {
+                    auto result = listener->handle(event);
+
+                    if (result == EventListenerResult::Handled) {
+                        return EventListenerResult::Handled;
+                    }
+                }
+            }
+
+            return EventListenerResult::Continue;
         }
     };
 }  // namespace ui

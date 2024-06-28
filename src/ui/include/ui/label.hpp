@@ -20,6 +20,12 @@ namespace ui {
     public:
         Label(std::string text, gfx::Font const& font);
 
+        Label(Label const&) = delete;
+        Label& operator=(Label const&) = delete;
+        Label(Label&&) = default;
+        Label& operator=(Label&&) = default;
+        ~Label() = default;
+
         void render(gfx::Renderer& renderer) const override;
     };
 }  // namespace ui

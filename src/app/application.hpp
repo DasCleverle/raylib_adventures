@@ -16,7 +16,7 @@ private:
     gfx::FontManager<FontType> m_font_manager;
     ui::EventDispatcher m_event_dispatcher;
 
-    std::unique_ptr<ui::Panel> m_ui_panel;
+    ui::Panel m_ui_panel;
 
     void update();
     void init();
