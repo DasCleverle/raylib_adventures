@@ -1,7 +1,7 @@
 add_library(ui STATIC
     button.cpp
     event_dispatcher.cpp
-    label.cpp
+    event_listener.cpp
     include/ui/button.hpp
     include/ui/event.hpp
     include/ui/event_dispatcher.hpp
@@ -10,6 +10,7 @@ add_library(ui STATIC
     include/ui/label.hpp
     include/ui/mouse_button.hpp
     include/ui/widget.hpp
+    label.cpp
 )
 
 target_include_directories(ui PUBLIC include)

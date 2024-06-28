@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include "keycode.hpp"
 #include "keystate.hpp"
 #include "mouse_button.hpp"
@@ -27,4 +29,6 @@ namespace ui {
         Vec2i position;
         Vec2i delta;
     };
+
+    using Event = std::variant<KeyboardEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent>;
 }  // namespace ui

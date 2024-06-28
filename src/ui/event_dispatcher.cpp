@@ -21,6 +21,27 @@ static inline constexpr auto s_mouse_buttons = std::array{
 
 namespace ui {
 
+    void EventDispatcher::update() {
+        assert(m_event_queue.empty() and "No events should have been published after dispatch");
+
+        poll_keyboard();
+        poll_mouse();
+        poll_mouse_move();
+        poll_mouse_wheel();
+
+        dispatch();
+    }
+
+    void EventDispatcher::dispatch() {
+        for (auto event : m_event_queue) {
+            for (auto listener : m_listeners) {
+                listener->handle(event);
+            }
+        }
+
+        m_event_queue.clear();
+    }
+
     void EventDispatcher::poll_keyboard() {
         for (auto it = m_pressed_keys.begin(); it != m_pressed_keys.end();) {
             int key = *it;

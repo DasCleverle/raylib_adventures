@@ -5,7 +5,6 @@
 
 #include "gfx/font.hpp"
 #include "ui/event.hpp"
-#include "ui/event_dispatcher.hpp"
 
 static inline std::string get_next_button_id() {
     static int counter = 0;
@@ -13,25 +12,11 @@ static inline std::string get_next_button_id() {
 }
 
 namespace ui {
-    Button::Button(
-        std::string&& id,
-        std::string&& text,
-        gfx::Font const& font,
-        EventDispatcher& event_dispatcher
-    )
-        : Widget{std::move(id)}, m_label{text, font}, m_event_dispatcher{&event_dispatcher} {
+    Button::Button(std::string&& id, std::string&& text, gfx::Font const& font)
+        : Widget{std::move(id)}, m_label{text, font} {}
 
-        event_dispatcher.listen<MouseMoveEvent>(*this);
-        event_dispatcher.listen<MouseEvent>(*this);
-    }
-
-    Button::Button(std::string&& text, gfx::Font const& font, EventDispatcher& event_dispatcher)
-        : Button{get_next_button_id(), std::move(text), font, event_dispatcher} {}
-
-    Button::~Button() {
-        m_event_dispatcher->unlisten<MouseEvent>(*this);
-        m_event_dispatcher->unlisten<MouseMoveEvent>(*this);
-    }
+    Button::Button(std::string&& text, gfx::Font const& font)
+        : Button{get_next_button_id(), std::move(text), font} {}
 
     void Button::render(gfx::Renderer& renderer) const {
         auto const color = std::invoke([&] {

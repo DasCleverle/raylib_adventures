@@ -1,7 +1,8 @@
 #pragma once
 
-#include <any>
-#include <typeindex>
+#include <algorithm>
+#include <cassert>
+#include <print>
 #include <vector>
 
 #include "event_listener.hpp"
@@ -11,7 +12,8 @@ namespace ui {
 
     class EventDispatcher final {
     private:
-        std::vector<std::pair<std::type_index, std::any>> m_listeners;
+        std::vector<GenericEventListener*> m_listeners;
+        std::vector<Event> m_event_queue;
 
         std::vector<int> m_pressed_keys{};
         std::vector<int> m_mouse_buttons{};
@@ -22,6 +24,8 @@ namespace ui {
         void poll_mouse_move();
         void poll_mouse_wheel();
 
+        void dispatch();
+
     public:
         EventDispatcher() = default;
         EventDispatcher(EventDispatcher const&) = delete;
@@ -29,64 +33,26 @@ namespace ui {
         EventDispatcher& operator=(EventDispatcher const&) = delete;
         EventDispatcher& operator=(EventDispatcher&&) = default;
 
-        void poll() {
-            poll_keyboard();
-            poll_mouse();
-            poll_mouse_move();
-            poll_mouse_wheel();
-        }
+        void update();
 
-        template<typename T, std::derived_from<EventListener<T>> L>
+        template<std::derived_from<GenericEventListener> L>
         void listen(L& listener) {
-            m_listeners.emplace_back(typeid(T), static_cast<EventListener<T>*>(&listener));
+            m_listeners.push_back(static_cast<GenericEventListener*>(&listener));
         }
 
-        template<typename T, std::derived_from<EventListener<T>> L>
+        template<std::derived_from<GenericEventListener> L>
         void unlisten(L& listener) {
-            for (auto it = m_listeners.begin(); it != m_listeners.end();) {
-                auto const& [type, l] = *it;
-
-                if (type != typeid(T)) {
-                    it++;
-                    continue;
-                }
-
-                auto const ptr = std::any_cast<EventListener<T>*>(l);
-
-                if (ptr == nullptr or ptr == &listener) {
-                    it = m_listeners.erase(it);
-                }
-                else {
-                    it++;
-                }
-            }
+            auto it = std::find(
+                m_listeners.begin(),
+                m_listeners.end(),
+                static_cast<GenericEventListener*>(&listener)
+            );
+            m_listeners.erase(it);
         }
 
-        template<typename T>
+        template<std::convertible_to<Event> T>
         void publish(T const& event) {
-            for (auto it = m_listeners.begin(); it != m_listeners.end();) {
-                auto const& [type, listener] = *it;
-
-                if (type != typeid(T)) {
-                    it++;
-                    continue;
-                }
-
-                auto ptr = std::any_cast<EventListener<T>*>(listener);
-
-                if (ptr == nullptr) {
-                    it = m_listeners.erase(it);
-                    continue;
-                }
-
-                auto const result = ptr->handle(event);
-
-                if (result == EventListenerResult::Handled) {
-                    break;
-                }
-
-                it++;
-            }
+            m_event_queue.push_back(event);
         }
     };
 }  // namespace ui
