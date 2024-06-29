@@ -13,9 +13,11 @@
 
 namespace ui {
     class ColumnLayout;
+    class RowLayout;
 
     class Panel final : public Widget, public GenericEventListener {
         friend class ColumnLayout;
+        friend class RowLayout;
 
     private:
         tl::optional<gfx::Color> m_background_color{tl::nullopt};

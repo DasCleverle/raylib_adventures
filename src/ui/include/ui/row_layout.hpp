@@ -4,13 +4,13 @@
 #include "panel.hpp"
 
 namespace ui {
-    class ColumnLayout final : public Layout {
+    class RowLayout final : public Layout {
     private:
-        std::size_t m_column_count;
+        std::size_t m_row_count;
 
     public:
-        ColumnLayout(std::size_t column_count)
-            : m_column_count{column_count} {}
+        RowLayout(std::size_t row_count)
+            : m_row_count{row_count} {}
 
         void recalc(ui::Panel& panel) const override;
     };

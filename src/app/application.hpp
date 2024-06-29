@@ -16,7 +16,7 @@ private:
     ui::EventDispatcher m_event_dispatcher;
     ui::WidgetFactory<FontType> m_widget_factory;
 
-    ui::Panel m_ui_panel;
+    std::shared_ptr<ui::Panel> m_ui_panel;
 
     void update();
     void init();

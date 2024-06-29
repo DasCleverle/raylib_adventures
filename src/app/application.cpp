@@ -5,17 +5,12 @@
 
 #include "gfx/font_config.hpp"
 #include "ui/button.hpp"
-#include "ui/column_layout.hpp"
 #include "ui/event.hpp"
+#include "ui/row_layout.hpp"
 
 static gfx::FontConfig<FontType> s_font_config = {
     {{FontType::Bitcell, "assets/fonts/bitcell.ttf", 40}},
     FontType::Bitcell
-};
-
-template<typename T>
-struct NoopDeleter {
-    void operator()(T*) {}
 };
 
 class MyTestListener : public ui::EventListener<ui::ClickEvent> {
@@ -28,7 +23,7 @@ class MyTestListener : public ui::EventListener<ui::ClickEvent> {
 Application::Application()
     : m_window{1600, 900, "My cool game"},
       m_font_manager{s_font_config},
-      m_ui_panel{"main_panel", ui::ColumnLayout(3)},
+      m_ui_panel{std::make_shared<ui::Panel>("main_panel", ui::RowLayout(3))},
       m_widget_factory{m_event_dispatcher, m_font_manager} {}
 
 void Application::init() {
@@ -40,11 +35,11 @@ void Application::init() {
     auto button = m_widget_factory.create_button("Okay");
     button.listen(std::make_shared<MyTestListener>());
 
-    m_ui_panel.set_background_color(gfx::Colors::LightGray);
-    m_ui_panel.set_area({50, 50, 603, 603});
-    m_ui_panel.add_widgets(std::move(button));
+    m_ui_panel->set_background_color(gfx::Colors::LightGray);
+    m_ui_panel->set_area({50, 50, 603, 603});
+    m_ui_panel->add_widgets(std::move(button));
 
-    m_event_dispatcher.listen(std::shared_ptr<ui::Panel>{&m_ui_panel, NoopDeleter<ui::Panel>{}});
+    m_event_dispatcher.listen(m_ui_panel);
 }
 
 void Application::update() {
@@ -55,5 +50,5 @@ void Application::update() {
     renderer.clear_background(gfx::Colors::RayWhite);
     renderer.draw_fps({1520, 7});
 
-    m_ui_panel.render(renderer);
+    m_ui_panel->render(renderer);
 }
