@@ -15,7 +15,7 @@ namespace ui {
         auto const column_width = 1.0f / static_cast<float>(m_column_count);
         auto const row_height = 1.0f / static_cast<float>(row_count);
 
-        auto const total_area = panel.area();
+        auto const total_area = panel.draw_area();
         std::size_t i = 0;
 
         for (std::size_t column = 0; column < m_column_count and i < area_count; column++) {

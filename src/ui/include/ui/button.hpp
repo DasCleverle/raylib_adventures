@@ -48,6 +48,11 @@ namespace ui {
             m_label.set_area(area);
         }
 
+        void set_margin(Margin const margin) override {
+            Widget::set_margin(margin);
+            m_label.set_margin(margin);
+        }
+
         EventListenerResult handle(MouseMoveEvent const& event) override;
 
         EventListenerResult handle(MouseEvent const& event) override;

@@ -4,10 +4,18 @@
 #include "gfx/renderer.hpp"
 
 namespace ui {
+    struct Margin {
+        int left;
+        int top;
+        int right;
+        int bottom;
+    };
+
     class Widget {
     private:
-        RectI m_area;
         std::string m_id;
+        RectI m_area;
+        Margin m_margin{0};
 
     public:
         Widget(std::string&& id)
@@ -45,8 +53,25 @@ namespace ui {
             return m_area;
         }
 
+        [[nodiscard]] RectI draw_area() const {
+            return RectI{
+                m_area.origin.x + m_margin.left,
+                m_area.origin.y + m_margin.top,
+                m_area.size.x - m_margin.left - m_margin.right,
+                m_area.size.y - m_margin.top - m_margin.bottom,
+            };
+        }
+
+        [[nodiscard]] Margin margin() const {
+            return m_margin;
+        }
+
         virtual void set_area(RectI const area) {
             m_area = area;
+        }
+
+        virtual void set_margin(Margin const margin) {
+            m_margin = margin;
         }
     };
 }  // namespace ui

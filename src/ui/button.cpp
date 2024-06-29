@@ -33,7 +33,7 @@ namespace ui {
             return m_color;
         });
 
-        renderer.draw_rect_filled(area(), color);
+        renderer.draw_rect_filled(draw_area(), color);
         m_label.render(renderer);
     }
 

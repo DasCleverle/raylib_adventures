@@ -13,17 +13,18 @@ namespace ui {
 
     void Label::render(gfx::Renderer& renderer) const {
         auto const text_size = m_font->measure_text(m_text.c_str());
+        auto const area = draw_area();
 
         auto const x = std::invoke([&]() {
             switch (m_align) {
                 case ui::HorizontalAlign::Left:
-                    return static_cast<float>(area().origin.x);
+                    return static_cast<float>(area.origin.x);
 
                 case ui::HorizontalAlign::Center:
-                    return (area().center() - text_size / 2).x;
+                    return (area.center() - text_size / 2).x;
 
                 case ui::HorizontalAlign::Right:
-                    return area().origin.x + area().size.x - text_size.x;
+                    return area.origin.x + area.size.x - text_size.x;
             }
 
             assert(false and "unreachable");
@@ -32,13 +33,13 @@ namespace ui {
         auto const y = std::invoke([&] {
             switch (m_vertical_align) {
                 case ui::VerticalAlign::Top:
-                    return static_cast<float>(area().origin.y);
+                    return static_cast<float>(area.origin.y);
 
                 case ui::VerticalAlign::Middle:
-                    return (area().center() - text_size / 2).y;
+                    return (area.center() - text_size / 2).y;
 
                 case ui::VerticalAlign::Bottom:
-                    return area().origin.y + area().size.y - text_size.y;
+                    return area.origin.y + area.size.y - text_size.y;
             }
 
             assert(false and "unreachable");
