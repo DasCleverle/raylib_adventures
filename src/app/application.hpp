@@ -7,14 +7,14 @@
 #include "gfx/window.hpp"
 #include "ui/event_dispatcher.hpp"
 #include "ui/panel.hpp"
-
-class MyTestListener;
+#include "ui/widget_factory.hpp"
 
 class Application final {
 private:
     gfx::Window m_window;
     gfx::FontManager<FontType> m_font_manager;
     ui::EventDispatcher m_event_dispatcher;
+    ui::WidgetFactory<FontType> m_widget_factory;
 
     ui::Panel m_ui_panel;
 

@@ -6,10 +6,12 @@ add_library(ui STATIC
     include/ui/event.hpp
     include/ui/event_dispatcher.hpp
     include/ui/event_listener.hpp
+    include/ui/event_source.hpp
     include/ui/keycode.hpp
     include/ui/label.hpp
     include/ui/mouse_button.hpp
     include/ui/widget.hpp
+    include/ui/widget_factory.hpp
     label.cpp
 )
 
