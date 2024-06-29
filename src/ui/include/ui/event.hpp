@@ -30,5 +30,13 @@ namespace ui {
         Vec2i delta;
     };
 
-    using Event = std::variant<KeyboardEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent>;
+    class Button;
+
+    struct ClickEvent final {
+        Button* button;
+        MouseEvent event;
+    };
+
+    using Event =
+        std::variant<KeyboardEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent, ClickEvent>;
 }  // namespace ui

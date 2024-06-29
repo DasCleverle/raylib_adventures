@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <array>
+#include <print>
 #include <vector>
 
 #include "ui/event.hpp"
@@ -22,8 +23,6 @@ static inline constexpr auto s_mouse_buttons = std::array{
 namespace ui {
 
     void EventDispatcher::update() {
-        assert(m_event_queue.empty() and "No events should have been published after dispatch");
-
         poll_keyboard();
         poll_mouse();
         poll_mouse_move();
@@ -33,13 +32,18 @@ namespace ui {
     }
 
     void EventDispatcher::dispatch() {
-        for (auto event : m_event_queue) {
-            for (auto listener : m_listeners) {
+        while (not m_event_queue.empty()) {
+            auto [event_only, event] = m_event_queue.front();
+            m_event_queue.pop_front();
+
+            for (auto [listener_only, listener] : m_listeners) {
+                if (event_only != listener_only) {
+                    continue;
+                }
+
                 listener->handle(event);
             }
         }
-
-        m_event_queue.clear();
     }
 
     void EventDispatcher::poll_keyboard() {

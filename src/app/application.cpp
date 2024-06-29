@@ -1,66 +1,35 @@
 #include "application.hpp"
 
 #include <cstdio>
+#include <memory>
 
 #include "gfx/font_config.hpp"
 #include "ui/button.hpp"
 #include "ui/column_layout.hpp"
 #include "ui/event.hpp"
 
-class MyTestListener : public ui::EventListener<ui::KeyboardEvent>,
-                       public ui::EventListener<ui::MouseEvent>,
-                       public ui::EventListener<ui::MouseMoveEvent>,
-                       public ui::EventListener<ui::MouseWheelEvent> {
-    ui::EventListenerResult handle(ui::KeyboardEvent const& event) override {
-        printf(
-            "handling key board event %d, type %d\n",
-            static_cast<int>(event.code),
-            static_cast<int>(event.state)
-        );
-
-        return ui::EventListenerResult::Handled;
-    }
-
-    ui::EventListenerResult handle(ui::MouseEvent const& event) override {
-        printf(
-            "handling mouse button event %d, type %d\n",
-            static_cast<int>(event.button),
-            static_cast<int>(event.state)
-        );
-
-        return ui::EventListenerResult::Handled;
-    }
-
-    ui::EventListenerResult handle(ui::MouseMoveEvent const& event) override {
-        printf(
-            "handling mouse move event from %d,%d to %d,%d (delta %d,%d)\n",
-            event.origin.x,
-            event.origin.y,
-            event.target.x,
-            event.target.y,
-            event.delta.x,
-            event.delta.y
-        );
-
-        return ui::EventListenerResult::Handled;
-    }
-
-    ui::EventListenerResult handle(ui::MouseWheelEvent const& event) override {
-        printf("handling mouse wheel event, direction: %d, %d \n", event.delta.x, event.delta.y);
-
-        return ui::EventListenerResult::Handled;
-    }
-};
-
 static gfx::FontConfig<FontType> s_font_config = {
     {{FontType::Bitcell, "assets/fonts/bitcell.ttf", 40}},
     FontType::Bitcell
 };
 
+template<typename T>
+struct NoopDeleter {
+    void operator()(T*) {}
+};
+
+class MyTestListener : public ui::EventListener<ui::ClickEvent> {
+    ui::EventListenerResult handle(ui::ClickEvent const& event) override {
+        std::println("button {} clicked", event.button->id());
+        return ui::EventListenerResult::Handled;
+    }
+};
+
 Application::Application()
     : m_window{1600, 900, "My cool game"},
       m_font_manager{s_font_config},
-      m_ui_panel{"main_panel", ui::ColumnLayout(3)} {}
+      m_ui_panel{"main_panel", ui::ColumnLayout(3)},
+      m_widget_factory{m_event_dispatcher, m_font_manager} {}
 
 void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);
@@ -68,11 +37,14 @@ void Application::init() {
 
     auto const& font = m_font_manager.default_font();
 
+    auto button = m_widget_factory.create_button("Okay");
+    button.listen(std::make_shared<MyTestListener>());
+
     m_ui_panel.set_background_color(gfx::Colors::LightGray);
     m_ui_panel.set_area({50, 50, 603, 603});
-    m_ui_panel.add_widgets(ui::Button{"Okay", font});
+    m_ui_panel.add_widgets(std::move(button));
 
-    m_event_dispatcher.listen(m_ui_panel);
+    m_event_dispatcher.listen(std::shared_ptr<ui::Panel>{&m_ui_panel, NoopDeleter<ui::Panel>{}});
 }
 
 void Application::update() {

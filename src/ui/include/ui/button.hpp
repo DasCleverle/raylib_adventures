@@ -2,12 +2,15 @@
 
 #include "event.hpp"
 #include "event_listener.hpp"
+#include "event_source.hpp"
 #include "label.hpp"
 #include "widget.hpp"
 
 namespace ui {
 
-    class Button final : public Widget, public EventListener<MouseMoveEvent, MouseEvent> {
+    class Button final : public Widget,
+                         public EventListener<MouseMoveEvent, MouseEvent>,
+                         public EventSource {
     private:
         Label m_label;
         gfx::Color m_color{gfx::Colors::DarkGray};
@@ -18,8 +21,8 @@ namespace ui {
         bool m_is_mouse_downed{false};
 
     public:
-        Button(std::string&& id, std::string&& text, gfx::Font const& font);
-        Button(std::string&& text, gfx::Font const& font);
+        Button(std::string&& id, std::string&& text, gfx::Font const& font, EventDispatcher& dispatcher);
+        Button(std::string&& text, gfx::Font const& font, EventDispatcher& dispatcher);
 
         Button(Button const&) = delete;
         Button& operator=(Button const&) = delete;

@@ -12,12 +12,16 @@ namespace ui {
 
     class GenericEventListener {
     public:
+        virtual ~GenericEventListener() = default;
+
         virtual EventListenerResult handle(Event const& event) = 0;
     };
 
     template<std::convertible_to<Event> E>
     class SpecificEventListener {
     public:
+        virtual ~SpecificEventListener() = default;
+
         virtual EventListenerResult handle(E const& event) = 0;
     };
 
