@@ -20,11 +20,11 @@ namespace ui {
         WidgetFactory& operator=(WidgetFactory&&) = default;
         ~WidgetFactory() = default;
 
-        Button create_button(std::string&& text) {
+        Button create_button(std::string&& text) const {
             return Button{std::move(text), m_font_manager->default_font(), *m_dispatcher};
         }
 
-        Button create_button(std::string&& id, std::string&& text) {
+        Button create_button(std::string&& id, std::string&& text) const {
             return Button{
                 std::move(id),
                 std::move(text),

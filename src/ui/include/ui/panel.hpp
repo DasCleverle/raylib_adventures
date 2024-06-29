@@ -53,9 +53,14 @@ namespace ui {
             m_layout->recalc(*this);
         }
 
+        void set_area(RectI const area) override {
+            Widget::set_area(area);
+            recalc_layout();
+        }
+
         void render(gfx::Renderer& renderer) const override {
             if (m_background_color.has_value()) {
-                renderer.draw_rect_filled(area(), m_background_color.value());
+                renderer.draw_rect_filled(draw_area(), m_background_color.value());
             }
 
             for (auto const& widget : m_widgets) {

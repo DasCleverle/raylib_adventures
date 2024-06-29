@@ -31,4 +31,8 @@ public:
             update();
         }
     }
+
+    ui::WidgetFactory<FontType> const& widget_factory() const {
+        return m_widget_factory;
+    }
 };

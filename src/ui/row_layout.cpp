@@ -11,15 +11,15 @@ namespace ui {
             return;
         }
 
-        auto const row_count = ceil_div(area_count, m_row_count);
-        auto const column_width = 1.0f / static_cast<float>(row_count);
+        auto const column_count = ceil_div(area_count, m_row_count);
+        auto const column_width = 1.0f / static_cast<float>(column_count);
         auto const row_height = 1.0f / static_cast<float>(m_row_count);
 
         auto const total_area = panel.area();
         std::size_t i = 0;
 
-        for (std::size_t row = 0; row < row_count and i < area_count; row++) {
-            for (std::size_t column = 0; column < m_row_count and i < area_count; column++) {
+        for (std::size_t row = 0; row < m_row_count and i < area_count; row++) {
+            for (std::size_t column = 0; column < column_count and i < area_count; column++) {
                 auto const relative_area = RectF{
                     Vec2f{column * column_width, row * row_height},
                     Vec2f{         column_width,       row_height}

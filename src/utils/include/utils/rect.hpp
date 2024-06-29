@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+#include <concepts>
 #include "concepts.hpp"
 #include "vec2.hpp"
 
@@ -19,8 +21,14 @@ struct Rect final {
     constexpr Rect(Vec2<T> const origin, Vec2<T> const size)
         : origin{origin}, size{size} {}
 
-    template<Numeric U>
-    requires(not std::same_as<T, U>)
+    template<std::floating_point U>
+    requires(not std::same_as<T, U> and std::integral<T>)
+    constexpr Rect(Rect<U> const& other)
+        : origin{static_cast<T>(std::floor(other.origin.x)), static_cast<T>(std::floor(other.origin.y))},
+          size{static_cast<T>(std::ceil(other.size.x)), static_cast<T>(std::ceil(other.size.y))} {}
+
+    template<std::integral U>
+    requires(not std::same_as<T, U> and std::floating_point<T>)
     constexpr Rect(Rect<U> const& other)
         : origin{static_cast<T>(other.origin.x), static_cast<T>(other.origin.y)},
           size{static_cast<T>(other.size.x), static_cast<T>(other.size.y)} {}
