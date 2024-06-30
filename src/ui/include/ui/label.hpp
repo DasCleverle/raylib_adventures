@@ -17,6 +17,7 @@ namespace ui {
         };
 
         std::string m_text;
+        std::vector<Line> m_lines;
 
         float m_line_height{1};
         gfx::Font const* m_font;
@@ -24,7 +25,7 @@ namespace ui {
         HorizontalAlign m_align{HorizontalAlign::Center};
         VerticalAlign m_vertical_align{VerticalAlign::Middle};
 
-        std::vector<Line> get_lines() const;
+        void recalc_lines();
         void render_line(gfx::Renderer& renderer, Line const& line, int line_index, int line_count)
             const;
 
@@ -38,5 +39,15 @@ namespace ui {
         ~Label() = default;
 
         void render(gfx::Renderer& renderer) const override;
+
+        void set_area(RectI const area) override {
+            Widget::set_area(area);
+            recalc_lines();
+        }
+
+        void set_text(std::string&& text) {
+            m_text = std::move(text);
+            recalc_lines();
+        }
     };
 }  // namespace ui

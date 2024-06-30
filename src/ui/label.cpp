@@ -12,14 +12,15 @@ static inline std::string get_next_label_id() {
 
 namespace ui {
     Label::Label(std::string text, gfx::Font const& font)
-        : Widget{get_next_label_id()}, m_text{std::move(text)}, m_font{&font} {}
+        : Widget{get_next_label_id()}, m_text{std::move(text)}, m_font{&font} {
+        recalc_lines();
+    }
 
     void Label::render(gfx::Renderer& renderer) const {
-        // TODO: Don't do this every frame
-        auto lines = get_lines();
+        auto size = m_lines.size();
 
-        for (int i = 0; i < lines.size(); i++) {
-            render_line(renderer, lines[i], i, lines.size());
+        for (int i = 0; i < size; i++) {
+            render_line(renderer, m_lines[i], i, size);
         }
     }
 
@@ -66,17 +67,17 @@ namespace ui {
         // renderer.draw_rect_outline(RectF{text_position, line.size}, 1.0f, gfx::Colors::Red);
     }
 
-    std::vector<Label::Line> Label::get_lines() const {
+    void Label::recalc_lines() {
+        m_lines.clear();
+
         auto const area = draw_area();
 
         if (auto const text_size = m_font->measure_text(m_text.c_str()); text_size.x < area.size.x)
         {
-            return {
-                Line{m_text, text_size}
-            };
+            m_lines.emplace_back(m_text, text_size);
+            return;
         }
 
-        std::vector<Line> lines;
         std::vector<std::string> words = split(m_text, ' ');
 
         auto begin = words.begin();
@@ -88,7 +89,7 @@ namespace ui {
             if (auto const text_size = m_font->measure_text(current_attempt.c_str());
                 text_size.x < area.size.x)
             {
-                lines.emplace_back(current_attempt, text_size);
+                m_lines.emplace_back(current_attempt, text_size);
 
                 begin = end;
                 end = words.end();
@@ -98,14 +99,12 @@ namespace ui {
             }
         } while (begin != words.end() and end != begin);
 
-        if (lines.size() == 0) {
-            lines.emplace_back("Error:", m_font->measure_text("Error:"));
-            lines.emplace_back("Text", m_font->measure_text("Text"));
-            lines.emplace_back("too", m_font->measure_text("too"));
-            lines.emplace_back("big", m_font->measure_text("big"));
+        if (m_lines.size() == 0) {
+            m_lines.emplace_back("Error:", m_font->measure_text("Error:"));
+            m_lines.emplace_back("Text", m_font->measure_text("Text"));
+            m_lines.emplace_back("too", m_font->measure_text("too"));
+            m_lines.emplace_back("big", m_font->measure_text("big"));
         }
-
-        return lines;
     }
 
 }  // namespace ui
