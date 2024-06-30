@@ -34,9 +34,9 @@ namespace ui {
     public:
         EventDispatcher() = default;
         EventDispatcher(EventDispatcher const&) = delete;
-        EventDispatcher(EventDispatcher&&) = default;
         EventDispatcher& operator=(EventDispatcher const&) = delete;
-        EventDispatcher& operator=(EventDispatcher&&) = default;
+        EventDispatcher(EventDispatcher&&) = delete;
+        EventDispatcher& operator=(EventDispatcher&&) = delete;
 
         void update();
 
@@ -48,9 +48,9 @@ namespace ui {
             m_listeners.emplace_back(&only, listener);
         }
 
-        void unlisten(GenericEventListener const& listener) {
+        void unlisten(std::shared_ptr<GenericEventListener> listener) {
             auto it = std::find_if(m_listeners.begin(), m_listeners.end(), [&listener](auto pair) {
-                return pair.second.get() == &listener;
+                return pair.second == listener;
             });
             m_listeners.erase(it);
         }

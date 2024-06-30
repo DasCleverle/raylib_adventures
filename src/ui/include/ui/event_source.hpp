@@ -17,12 +17,11 @@ namespace ui {
         EventSource(EventSource const&) = delete;
         EventSource& operator=(EventSource const&) = delete;
 
-        EventSource(EventSource&& other) {
-            m_listeners = other.m_listeners;
-            m_dispatcher = other.m_dispatcher;
-
+        EventSource(EventSource&& other)
+            : m_listeners{std::move(other.m_listeners)},
+              m_dispatcher{std::move(other.m_dispatcher)} {
             for (auto listener : m_listeners) {
-                m_dispatcher->unlisten(*listener);
+                m_dispatcher->unlisten(listener);
                 m_dispatcher->listen(*this, listener);
             }
 
@@ -31,19 +30,23 @@ namespace ui {
         }
 
         EventSource& operator=(EventSource&& other) {
+            if (&other == this) {
+                return *this;
+            }
+
             for (auto listener : m_listeners) {
-                m_dispatcher->unlisten(*listener);
+                m_dispatcher->unlisten(listener);
                 other.m_dispatcher->listen(*this, listener);
             }
 
             for (auto listener : other.m_listeners) {
-                other.m_dispatcher->unlisten(*listener);
+                other.m_dispatcher->unlisten(listener);
                 other.m_dispatcher->listen(*this, listener);
 
                 m_listeners.push_back(listener);
             }
 
-            m_dispatcher = other.m_dispatcher;
+            m_dispatcher = std::move(other.m_dispatcher);
 
             other.m_listeners.clear();
             other.m_dispatcher = nullptr;
@@ -53,7 +56,7 @@ namespace ui {
 
         virtual ~EventSource() {
             for (auto listener : m_listeners) {
-                m_dispatcher->unlisten(*listener);
+                m_dispatcher->unlisten(listener);
             }
         }
 
