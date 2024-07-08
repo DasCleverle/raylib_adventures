@@ -24,22 +24,22 @@ namespace gfx {
         ~Renderer();
 
         void clear_background(Color const color);
-        void draw_fps(Vec2f position);
+        void draw_fps(Vec2i position);
 
-        void draw_text(char const* const text, Vec2f const position, int const size, Color const color);
+        void draw_text(char const* const text, Vec2i const position, int const size, Color const color);
         void draw_text(
             Font const& font_type,
             char const* const text,
-            Vec2f const position,
+            Vec2i const position,
             Color const color
         );
 
-        void draw_rect_filled(RectF const rect, Color const color);
-        void draw_rect_outline(RectF const rect, float const thickness, Color const color);
+        void draw_rect_filled(RectI const rect, Color const color);
+        void draw_rect_outline(RectI const rect, int const thickness, Color const color);
 
-        void draw_circle_filled(Vec2f const center, int const radius, Color const color);
+        void draw_circle_filled(Vec2i const center, int const radius, Color const color);
         void draw_circle_outline(
-            Vec2f const center,
+            Vec2i const center,
             int const radius,
             float const thickness,
             Color const color

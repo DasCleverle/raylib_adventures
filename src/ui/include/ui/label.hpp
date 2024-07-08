@@ -11,7 +11,7 @@ namespace ui {
     private:
         struct Line {
             std::string text;
-            RectF area;
+            RectI area;
         };
 
         std::string m_text;

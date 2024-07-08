@@ -24,9 +24,12 @@ namespace gfx {
         m_handle = std::unique_ptr<::Font, Font::Deleter>{new ::Font{raylib_font}};
     }
 
-    [[nodiscard]] Vec2f Font::measure_text(char const* const text) const {
+    [[nodiscard]] Vec2i Font::measure_text(char const* const text) const {
         auto const size = MeasureTextEx(*m_handle, text, m_size, 0.0f);
-        return Vec2f{size.x, size.y};
+        return Vec2i{
+            static_cast<int>(std::ceil(size.x)),
+            static_cast<int>(std::ceil(size.y)),
+        };
     }
 
 }  // namespace gfx

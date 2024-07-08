@@ -32,7 +32,7 @@ namespace ui {
 
         if (auto const text_size = m_font->measure_text(m_text.c_str()); text_size.x < area.size.x)
         {
-            RectF text_area{
+            RectI text_area{
                 {0, 0},
                 text_size
             };
@@ -51,7 +51,7 @@ namespace ui {
             if (auto const text_size = m_font->measure_text(current_attempt.c_str());
                 text_size.x < area.size.x)
             {
-                RectF text_area{
+                RectI text_area{
                     {0, 0},
                     text_size
                 };
@@ -88,10 +88,10 @@ namespace ui {
                         return static_cast<float>(area.origin.x);
 
                     case ui::HorizontalAlign::Center:
-                        return (area.center() - line.area.size / 2).x;
+                        return area.center().x - line.area.size.x / 2.0f;
 
                     case ui::HorizontalAlign::Right:
-                        return area.origin.x + area.size.x - line.area.size.x;
+                        return static_cast<float>(area.origin.x + area.size.x - line.area.size.x);
                 }
 
                 assert(false and "unreachable");
@@ -102,7 +102,7 @@ namespace ui {
 
                 switch (m_vertical_align) {
                     case ui::VerticalAlign::Top:
-                        return static_cast<float>(area.origin.y + (line_index * line_height));
+                        return area.origin.y + (line_index * line_height);
 
                     case ui::VerticalAlign::Middle:
                         return area.center().y - (line_count / 2.0f * line_height)
@@ -116,12 +116,15 @@ namespace ui {
                 assert(false and "unreachable");
             });
 
-            line.area.origin = Vec2f{x, y};
+            line.area.origin = Vec2i{
+                static_cast<int>(std::ceil(x)),
+                static_cast<int>(std::ceil(y)),
+            };
         }
     }
 
     [[nodiscard]] RectI Label::text_area() const {
-        RectF text_area{};
+        RectI text_area{};
 
         for (auto const line : m_lines) {
             text_area.origin.x = text_area.origin.x == 0

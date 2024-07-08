@@ -32,18 +32,18 @@ namespace gfx {
         ClearBackground(to_raylib_color(color));
     }
 
-    void Renderer::draw_fps(Vec2f position) {
+    void Renderer::draw_fps(Vec2i position) {
         DrawFPS(position.x, position.y);
     }
 
-    void Renderer::draw_text(char const* const text, Vec2f position, int size, Color color) {
+    void Renderer::draw_text(char const* const text, Vec2i position, int size, Color color) {
         DrawText(text, position.x, position.y, size, to_raylib_color(color));
     }
 
     void Renderer::draw_text(
         Font const& font,
         char const* const text,
-        Vec2f const position,
+        Vec2i const position,
         Color const color
     ) {
         DrawTextEx(
@@ -56,19 +56,22 @@ namespace gfx {
         );
     }
 
-    void Renderer::draw_rect_filled(RectF const rect, Color const color) {
+    void Renderer::draw_rect_filled(RectI const rect, Color const color) {
         DrawRectangle(rect.origin.x, rect.origin.y, rect.size.x, rect.size.y, to_raylib_color(color));
     }
 
-    void Renderer::draw_rect_outline(RectF const rect, float const thickness, Color const color) {
-        DrawRectangleLinesEx(
-            {rect.origin.x, rect.origin.y, rect.size.x, rect.size.y},
-            thickness,
-            to_raylib_color(color)
-        );
+    void Renderer::draw_rect_outline(RectI const rect, int const thickness, Color const color) {
+        Rectangle raylib_rect{
+            static_cast<float>(rect.origin.x),
+            static_cast<float>(rect.origin.y),
+            static_cast<float>(rect.size.x),
+            static_cast<float>(rect.size.y)
+        };
+
+        DrawRectangleLinesEx(raylib_rect, static_cast<float>(thickness), to_raylib_color(color));
     }
 
-    void Renderer::draw_circle_filled(Vec2f const center, int const radius, Color const color) {
+    void Renderer::draw_circle_filled(Vec2i const center, int const radius, Color const color) {
         DrawCircle(center.x, center.y, radius, to_raylib_color(color));
     }
 }  // namespace gfx

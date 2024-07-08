@@ -29,6 +29,6 @@ namespace gfx {
         Font(std::string const& file_name, int font_size);
 
     public:
-        [[nodiscard]] Vec2f measure_text(char const* const text) const;
+        [[nodiscard]] Vec2i measure_text(char const* const text) const;
     };
 }  // namespace gfx
