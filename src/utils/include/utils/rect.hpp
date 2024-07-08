@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <concepts>
+#include <format>
 #include "concepts.hpp"
 #include "vec2.hpp"
 
@@ -51,11 +52,42 @@ struct Rect final {
         };
     }
 
-    [[nodiscard]] constexpr bool contains(Vec2<T> position) const {
+    [[nodiscard]] constexpr bool contains(Vec2<T> const position) const {
         return position.x >= origin.x and position.y >= origin.y and position.x <= origin.x + size.x
                and position.y <= origin.y + size.y;
+    }
+
+    [[nodiscard]] constexpr Rect scale_from_center(float factor) const {
+        if (factor == 1) {
+            return Rect{*this};
+        }
+
+        float sign = factor > 1 ? -1 : 1;
+        Vec2f scaled_size = size * factor;
+        Vec2f scaled_origin = origin + ((size - scaled_size) / 2.0f) * sign;
+
+        return Rect{scaled_origin, scaled_size};
     }
 };
 
 using RectI = Rect<int>;
 using RectF = Rect<float>;
+
+template<typename T, typename CharT>
+struct std::formatter<Rect<T>, CharT> {
+
+    constexpr auto parse(std::format_parse_context& context) {
+        return context.begin();
+    }
+
+    auto format(Rect<T> const& rect, std::format_context& context) const {
+        return std::format_to(
+            context.out(),
+            "Rect{{ {}, {}, {}, {} }}",
+            rect.origin.x,
+            rect.origin.y,
+            rect.size.x,
+            rect.size.y
+        );
+    }
+};

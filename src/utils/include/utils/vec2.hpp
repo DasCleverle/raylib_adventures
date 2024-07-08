@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+#include <concepts>
 #include "concepts.hpp"
 
 template<Numeric T>
@@ -21,9 +23,14 @@ struct Vec2 final {
     constexpr Vec2()
         : x{}, y{} {}
 
-    template<Numeric U>
-    requires(not std::same_as<T, U>)
-    constexpr explicit Vec2(Vec2<U> const other)
+    template<std::floating_point U>
+    requires(not std::same_as<T, U> and std::integral<T>)
+    constexpr Vec2(Vec2<U> const other)
+        : x{static_cast<T>(std::floor(other.x))}, y{static_cast<T>(std::floor(other.y))} {}
+
+    template<std::integral U>
+    requires(not std::same_as<T, U> and std::floating_point<T>)
+    constexpr Vec2(Vec2<U> const other)
         : x{static_cast<T>(other.x)}, y{static_cast<T>(other.y)} {}
 
     [[nodiscard]] constexpr Vec2 hadamard_product(Vec2 const other) const {
@@ -46,16 +53,16 @@ struct Vec2 final {
         return Vec2(x / scalar, y / scalar);
     }
 
-    template<Numeric U>
-    requires(not std::same_as<T, U>)
-    constexpr Vec2 operator*(U const scalar) const {
-        return Vec2(x * static_cast<T>(scalar), y * static_cast<T>(scalar));
+    template<std::floating_point U>
+    requires(not std::same_as<T, U> and std::integral<T>)
+    constexpr Vec2<U> operator*(U const scalar) const {
+        return Vec2(static_cast<U>(x) * scalar, static_cast<U>(y) * scalar);
     }
 
-    template<Numeric U>
-    requires(not std::same_as<T, U>)
-    constexpr Vec2 operator/(U const scalar) const {
-        return Vec2(x / static_cast<T>(scalar), y / static_cast<T>(scalar));
+    template<std::floating_point U>
+    requires(not std::same_as<T, U> and std::integral<T>)
+    constexpr Vec2<U> operator/(U const scalar) const {
+        return Vec2(static_cast<U>(x) / scalar, static_cast<U>(y) / scalar);
     }
 
     constexpr Vec2& operator+=(Vec2 const& other) {

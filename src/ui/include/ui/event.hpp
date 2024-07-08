@@ -31,12 +31,18 @@ namespace ui {
     };
 
     class Button;
+    class Checkbox;
 
     struct ClickEvent final {
         Button* button;
         MouseEvent event;
     };
 
+    struct CheckedEvent final {
+        Checkbox* checkbox;
+        MouseEvent event;
+    };
+
     using Event =
-        std::variant<KeyboardEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent, ClickEvent>;
+        std::variant<KeyboardEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent, ClickEvent, CheckedEvent>;
 }  // namespace ui
