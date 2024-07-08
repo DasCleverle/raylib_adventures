@@ -22,6 +22,9 @@ class MyTestListener : public ui::EventListener<ui::ClickEvent> {
 };
 
 void add_panel_widgets(Application const& app, ui::Panel& panel) {
+    auto checkbox = app.widget_factory().create_checkbox("Checkbox 1");
+    checkbox.set_margin(ui::Margin{10, 10, 10, 10});
+
     panel.add_widgets(
         app.widget_factory().create_button("Button 1"),
         app.widget_factory().create_button("Button 2"),
@@ -29,7 +32,8 @@ void add_panel_widgets(Application const& app, ui::Panel& panel) {
         app.widget_factory().create_button("Button 4"),
         app.widget_factory().create_button("Button 5"),
         app.widget_factory().create_button("Button 6"),
-        app.widget_factory().create_button("Button 7")
+        app.widget_factory().create_button("Button 7"),
+        std::move(checkbox)
     );
 }
 

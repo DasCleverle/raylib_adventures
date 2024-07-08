@@ -1,19 +1,17 @@
 #pragma once
 
+#include <cmath>
+#include "align.hpp"
 #include "gfx/font.hpp"
 #include "widget.hpp"
 
 namespace ui {
 
-    enum class HorizontalAlign { Left = 0, Center = 1, Right = 2 };
-
-    enum class VerticalAlign { Top = 0, Middle = 1, Bottom = 2 };
-
     class Label final : public Widget {
     private:
         struct Line {
             std::string text;
-            Vec2f size;
+            RectF area;
         };
 
         std::string m_text;
@@ -25,12 +23,12 @@ namespace ui {
         HorizontalAlign m_align{HorizontalAlign::Center};
         VerticalAlign m_vertical_align{VerticalAlign::Middle};
 
+        std::vector<Line> get_lines() const;
         void recalc_lines();
-        void render_line(gfx::Renderer& renderer, Line const& line, int line_index, int line_count)
-            const;
+        void render_line(gfx::Renderer& renderer, Line const& line) const;
 
     public:
-        Label(std::string text, gfx::Font const& font);
+        Label(std::string&& text, gfx::Font const& font);
 
         Label(Label const&) = delete;
         Label& operator=(Label const&) = delete;
@@ -39,6 +37,8 @@ namespace ui {
         ~Label() = default;
 
         void render(gfx::Renderer& renderer) const override;
+
+        [[nodiscard]] RectI text_area() const;
 
         void set_area(RectI const area) override {
             Widget::set_area(area);

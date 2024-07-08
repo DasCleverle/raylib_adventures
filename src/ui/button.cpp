@@ -1,24 +1,19 @@
 #include "ui/button.hpp"
 
-#include <format>
 #include <functional>
 
 #include "gfx/font.hpp"
 #include "ui/event.hpp"
 #include "ui/event_listener.hpp"
 #include "ui/keystate.hpp"
-
-static inline std::string get_next_button_id() {
-    static int counter = 0;
-    return std::format("button_{}", counter++);
-}
+#include "ui/utils.hpp"
 
 namespace ui {
     Button::Button(std::string&& id, std::string&& text, gfx::Font const& font, EventDispatcher& dispatcher)
-        : Widget{std::move(id)}, EventSource{dispatcher}, m_label{text, font} {}
+        : Widget{std::move(id)}, EventSource{dispatcher}, m_label{std::move(text), font} {}
 
     Button::Button(std::string&& text, gfx::Font const& font, EventDispatcher& dispatcher)
-        : Button{get_next_button_id(), std::move(text), font, dispatcher} {}
+        : Button{get_next_id<Button>("button"), std::move(text), font, dispatcher} {}
 
     void Button::render(gfx::Renderer& renderer) const {
         auto const color = std::invoke([&] {
