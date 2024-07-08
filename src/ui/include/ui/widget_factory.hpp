@@ -40,7 +40,7 @@ namespace ui {
         }
 
         Checkbox create_checkbox(std::string&& label) const {
-            return Checkbox{std::move(label), m_font_manager->default_font()};
+            return Checkbox{std::move(label), m_font_manager->default_font(), *m_dispatcher};
         }
     };
 }  // namespace ui

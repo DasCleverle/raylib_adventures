@@ -1,6 +1,7 @@
 #include "ui/button.hpp"
 
 #include <functional>
+#include <print>
 
 #include "gfx/font.hpp"
 #include "ui/event.hpp"
@@ -43,10 +44,15 @@ namespace ui {
         auto is_pressed = event.state == KeyState::Pressed;
 
         if (m_is_mouse_downed and contains and is_left and not is_pressed) {
+            m_is_mouse_downed = false;
+
             publish_event(ClickEvent{this, event});
+
+            return EventListenerResult::Handled;
         }
 
-        m_is_mouse_downed = contains and is_left && is_pressed;
+        m_is_mouse_downed = contains and is_left and is_pressed;
+
         return EventListenerResult::Continue;
     }
 

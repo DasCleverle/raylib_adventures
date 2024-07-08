@@ -40,6 +40,7 @@ namespace ui {
 
     struct CheckedEvent final {
         Checkbox* checkbox;
+        bool checked;
         MouseEvent event;
     };
 

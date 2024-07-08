@@ -3,17 +3,19 @@
 #include "gfx/color.hpp"
 #include "ui/event.hpp"
 #include "ui/event_listener.hpp"
+#include "ui/event_source.hpp"
 #include "ui/label.hpp"
 #include "ui/widget.hpp"
 
 namespace ui {
 
-    class Checkbox : public Widget, public EventListener<MouseEvent> {
+    class Checkbox : public Widget, public EventListener<MouseEvent>, public EventSource {
     private:
         bool m_is_checked{false};
+        bool m_is_mouse_downed{false};
 
-        int m_box_size{32};
-        int m_box_spacing{10};
+        int m_box_size{28};
+        int m_box_spacing{8};
         float m_box_thickness{4};
         gfx::Color m_box_color{gfx::Colors::Black};
 
@@ -22,8 +24,13 @@ namespace ui {
         [[nodiscard]] RectI box_area() const;
 
     public:
-        Checkbox(std::string&& id, std::string&& label, gfx::Font const& font);
-        Checkbox(std::string&& label, gfx::Font const& font);
+        Checkbox(
+            std::string&& id,
+            std::string&& label,
+            gfx::Font const& font,
+            EventDispatcher& dispatcher
+        );
+        Checkbox(std::string&& label, gfx::Font const& font, EventDispatcher& dispatcher);
 
         Checkbox(Checkbox const&) = delete;
         Checkbox& operator=(Checkbox const&) = delete;

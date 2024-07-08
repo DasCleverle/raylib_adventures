@@ -1,12 +1,17 @@
 #include "ui/checkbox.hpp"
-#include <ostream>
+#include <print>
 
 #include "ui/utils.hpp"
 
 namespace ui {
 
-    Checkbox::Checkbox(std::string&& id, std::string&& label, gfx::Font const& font)
-        : Widget{std::move(id)}, m_label{std::move(label), font} {
+    Checkbox::Checkbox(
+        std::string&& id,
+        std::string&& label,
+        gfx::Font const& font,
+        EventDispatcher& dispatcher
+    )
+        : Widget{std::move(id)}, EventSource{dispatcher}, m_label{std::move(label), font} {
 
         m_label.set_margin(Margin{
             static_cast<int>(m_box_size + m_box_spacing),
@@ -16,8 +21,8 @@ namespace ui {
         });
     }
 
-    Checkbox::Checkbox(std::string&& label, gfx::Font const& font)
-        : Checkbox{get_next_id<Checkbox>("checkbox"), std::move(label), font} {}
+    Checkbox::Checkbox(std::string&& label, gfx::Font const& font, EventDispatcher& dispatcher)
+        : Checkbox{get_next_id<Checkbox>("checkbox"), std::move(label), font, dispatcher} {}
 
     [[nodiscard]] RectI Checkbox::box_area() const {
         auto text_area = m_label.text_area();
@@ -32,7 +37,7 @@ namespace ui {
         renderer.draw_rect_outline(box_area(), m_box_thickness, m_box_color);
 
         if (m_is_checked) {
-            RectF check_area = box_area().scale_from_center(0.5f);
+            auto check_area = box_area().scale_from_center(0.5f);
 
             renderer.draw_rect_filled(check_area, m_box_color);
         }
@@ -56,18 +61,25 @@ namespace ui {
     }
 
     EventListenerResult Checkbox::handle(MouseEvent const& event) {
-        if (event.state != KeyState::Released) {
-            return EventListenerResult::Continue;
+        auto contains =
+            m_label.text_area().contains(event.position) or box_area().contains(event.position);
+        auto is_left = event.button == MouseButton::Left;
+        auto is_pressed = event.state == KeyState::Pressed;
+
+        std::println("handling checkbox click: mouse downed: {} ({})", m_is_mouse_downed, id());
+
+        if (m_is_mouse_downed and contains and is_left and not is_pressed) {
+            m_is_checked = not m_is_checked;
+            m_is_mouse_downed = false;
+
+            publish_event(CheckedEvent{this, m_is_checked, event});
+
+            return EventListenerResult::Handled;
         }
 
-        if (not m_label.text_area().contains(event.position)
-            and not box_area().contains(event.position))
-        {
-            return EventListenerResult::Continue;
-        }
+        m_is_mouse_downed = contains and is_left and is_pressed;
 
-        m_is_checked = not m_is_checked;
-        return EventListenerResult::Handled;
+        return EventListenerResult::Continue;
     }
 
 }  // namespace ui
