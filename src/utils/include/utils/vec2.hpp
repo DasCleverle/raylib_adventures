@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <concepts>
+#include <format>
 #include "concepts.hpp"
 
 template<Numeric T>
@@ -160,3 +161,15 @@ inline Vec2i operator-=(Vec2i a, Vec2f const b) {
 
     return a;
 }
+
+template<typename T, typename CharT>
+struct std::formatter<Vec2<T>, CharT> {
+
+    constexpr auto parse(std::format_parse_context& context) {
+        return context.begin();
+    }
+
+    auto format(Vec2<T> const& vec, std::format_context& context) const {
+        return std::format_to(context.out(), "Vec{{ {}, {} }}", vec.x, vec.y);
+    }
+};
