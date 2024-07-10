@@ -3,8 +3,14 @@
 #include <raylib.h>
 #include <cstdio>
 #include <format>
+#include <vector>
 
 namespace gfx {
+
+    static std::array<std::pair<int, int>, 2> s_codepoint_ranges = {
+        std::pair{0x20, 0x7e}, // ASCII characters
+        std::pair{0xa1, 0xff}, // Latin supplement
+    };
 
     void Font::Deleter::operator()(::Font const* handle) const {
         UnloadFont(*handle);
@@ -13,7 +19,16 @@ namespace gfx {
 
     Font::Font(std::string const& file_name, int font_size)
         : m_size{font_size} {
-        ::Font const raylib_font = LoadFontEx(file_name.c_str(), font_size, nullptr, 0);
+
+        std::vector<int> codepoints{};
+        for (auto const [start, end] : s_codepoint_ranges) {
+            for (int i = start; i < end; i++) {
+                codepoints.push_back(i);
+            }
+        }
+
+        ::Font const raylib_font =
+            LoadFontEx(file_name.c_str(), font_size, codepoints.data(), codepoints.size());
 
         if (not IsFontReady(raylib_font) or raylib_font.texture.id == GetFontDefault().texture.id) {
             throw std::runtime_error{std::format("failed to load font '{}'", file_name)};
