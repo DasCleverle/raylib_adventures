@@ -2,7 +2,6 @@
 
 #include <raylib.h>
 #include <array>
-#include <print>
 #include <vector>
 
 #include "ui/event.hpp"
@@ -63,6 +62,19 @@ namespace ui {
         while ((key = GetKeyPressed()) != 0) {
             m_pressed_keys.push_back(key);
             publish(KeyboardEvent{static_cast<KeyCode>(key), KeyState::Pressed});
+        }
+
+        int c;
+        while ((c = GetCharPressed()) != 0) {
+            publish(TypedEvent{static_cast<char32_t>(c)});
+        }
+
+        for (auto const key : m_pressed_keys) {
+            if (not IsKeyPressedRepeat(key)) {
+                continue;
+            }
+
+            publish(KeyboardEvent{static_cast<KeyCode>(key), KeyState::Repeated});
         }
     }
 

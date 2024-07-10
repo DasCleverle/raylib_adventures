@@ -13,6 +13,10 @@ namespace ui {
         KeyState state;
     };
 
+    struct TypedEvent final {
+        char32_t utf8_codepoint;
+    };
+
     struct MouseEvent final {
         MouseButton button;
         KeyState state;
@@ -45,5 +49,5 @@ namespace ui {
     };
 
     using Event =
-        std::variant<KeyboardEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent, ClickEvent, CheckedEvent>;
+        std::variant<KeyboardEvent, TypedEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent, ClickEvent, CheckedEvent>;
 }  // namespace ui
