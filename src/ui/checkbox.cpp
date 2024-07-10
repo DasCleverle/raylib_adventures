@@ -1,6 +1,4 @@
 #include "ui/checkbox.hpp"
-#include <print>
-
 #include "ui/utils.hpp"
 
 namespace ui {

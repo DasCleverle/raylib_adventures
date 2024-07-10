@@ -3,6 +3,7 @@
 #include "event_dispatcher.hpp"
 #include "gfx/font_manager.hpp"
 #include "label.hpp"
+#include "ui/textbox.hpp"
 
 namespace ui {
 
@@ -41,6 +42,10 @@ namespace ui {
 
         Checkbox create_checkbox(std::string&& label) const {
             return Checkbox{std::move(label), m_font_manager->default_font(), *m_dispatcher};
+        }
+
+        Textbox create_textbox() const {
+            return Textbox{m_font_manager->default_font()};
         }
     };
 }  // namespace ui

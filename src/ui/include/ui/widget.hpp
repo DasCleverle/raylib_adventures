@@ -9,6 +9,15 @@ namespace ui {
         int top;
         int right;
         int bottom;
+
+        RectI apply(RectI const rect) const {
+            return RectI{
+                rect.origin.x + left,
+                rect.origin.y + top,
+                rect.size.x - left - right,
+                rect.size.y - top - bottom,
+            };
+        }
     };
 
     class Widget {
@@ -54,12 +63,7 @@ namespace ui {
         }
 
         [[nodiscard]] RectI draw_area() const {
-            return RectI{
-                m_area.origin.x + m_margin.left,
-                m_area.origin.y + m_margin.top,
-                m_area.size.x - m_margin.left - m_margin.right,
-                m_area.size.y - m_margin.top - m_margin.bottom,
-            };
+            return m_margin.apply(m_area);
         }
 
         [[nodiscard]] Margin margin() const {
