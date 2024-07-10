@@ -23,15 +23,14 @@ namespace ui {
     }
 
     void Label::render_line(gfx::Renderer& renderer, Line const& line) const {
-        renderer.draw_text(*m_font, line.text.c_str(), line.area.origin, m_color);
+        renderer.draw_text(*m_font, line.text, line.area.origin, m_color);
     }
 
     std::vector<Label::Line> Label::get_lines() const {
         std::vector<Line> lines;
         auto const area = draw_area();
 
-        if (auto const text_size = m_font->measure_text(m_text.c_str()); text_size.x < area.size.x)
-        {
+        if (auto const text_size = m_font->measure_text(m_text); text_size.x < area.size.x) {
             RectI text_area{
                 {0, 0},
                 text_size
@@ -48,7 +47,7 @@ namespace ui {
         do {
             auto current_attempt = join(begin, end, ' ');
 
-            if (auto const text_size = m_font->measure_text(current_attempt.c_str());
+            if (auto const text_size = m_font->measure_text(current_attempt);
                 text_size.x < area.size.x)
             {
                 RectI text_area{

@@ -36,19 +36,15 @@ namespace gfx {
         DrawFPS(position.x, position.y);
     }
 
-    void Renderer::draw_text(char const* const text, Vec2i position, int size, Color color) {
-        DrawText(text, position.x, position.y, size, to_raylib_color(color));
-    }
-
     void Renderer::draw_text(
         Font const& font,
-        char const* const text,
+        std::string const& text,
         Vec2i const position,
         Color const color
     ) {
         DrawTextEx(
             *font.m_handle,
-            text,
+            text.c_str(),
             {static_cast<float>(position.x), static_cast<float>(position.y)},
             font.m_size,
             0,

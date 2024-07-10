@@ -26,10 +26,9 @@ namespace gfx {
         void clear_background(Color const color);
         void draw_fps(Vec2i position);
 
-        void draw_text(char const* const text, Vec2i const position, int const size, Color const color);
         void draw_text(
             Font const& font_type,
-            char const* const text,
+            std::string const& text,
             Vec2i const position,
             Color const color
         );
