@@ -43,5 +43,7 @@ namespace gfx {
             float const thickness,
             Color const color
         );
+
+        void draw_line(Vec2i from, Vec2i to, int const thickness, Color const color);
     };
 }  // namespace gfx

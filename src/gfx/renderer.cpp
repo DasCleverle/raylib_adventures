@@ -70,4 +70,18 @@ namespace gfx {
     void Renderer::draw_circle_filled(Vec2i const center, int const radius, Color const color) {
         DrawCircle(center.x, center.y, radius, to_raylib_color(color));
     }
+
+    void Renderer::draw_line(Vec2i from, Vec2i to, int const thickness, Color const color) {
+        Vector2 start{
+            static_cast<float>(from.x),
+            static_cast<float>(from.y),
+        };
+        Vector2 end{
+            static_cast<float>(to.x),
+            static_cast<float>(to.y),
+        };
+
+        DrawLineEx(start, end, thickness, to_raylib_color(color));
+    }
+
 }  // namespace gfx
