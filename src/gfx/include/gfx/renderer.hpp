@@ -1,14 +1,16 @@
 #pragma once
 
-#include "utils/rect.hpp"
 #include "utils/vec2.hpp"
 
 #include "color.hpp"
 #include "font.hpp"
+#include "renderer_base.hpp"
 #include "window.hpp"
 
 namespace gfx {
-    class Renderer final {
+    class RenderBuffer;
+
+    class Renderer final : public RendererBase {
         friend class Window;
 
     private:
@@ -23,27 +25,10 @@ namespace gfx {
         Renderer& operator=(Renderer&&) = delete;
         ~Renderer();
 
-        void clear_background(Color const color);
         void draw_fps(Vec2i position);
 
-        void draw_text(
-            Font const& font_type,
-            std::string const& text,
-            Vec2i const position,
-            Color const color
-        );
+        void render_buffer(RenderBuffer const& buffer, Vec2i position);
 
-        void draw_rect_filled(RectI const rect, Color const color);
-        void draw_rect_outline(RectI const rect, int const thickness, Color const color);
-
-        void draw_circle_filled(Vec2i const center, int const radius, Color const color);
-        void draw_circle_outline(
-            Vec2i const center,
-            int const radius,
-            float const thickness,
-            Color const color
-        );
-
-        void draw_line(Vec2i from, Vec2i to, int const thickness, Color const color);
+        void render_buffer(RenderBuffer const& buffer, Vec2i position, RectI section);
     };
 }  // namespace gfx

@@ -7,13 +7,13 @@ struct Font;
 
 namespace gfx {
 
-    class Renderer;
+    class RendererBase;
 
     template<typename T>
     class FontManager;
 
     class Font final {
-        friend class Renderer;
+        friend class RendererBase;
 
         template<typename T>
         friend class FontManager;
