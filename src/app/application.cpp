@@ -10,8 +10,11 @@
 #include "ui/row_layout.hpp"
 
 static gfx::FontConfig<FontType> s_font_config = {
-    {{FontType::Bitcell, "assets/fonts/bitcell.ttf", 40}},
-    FontType::Bitcell
+    {
+     {FontType::Bitcell, "assets/fonts/bitcell.ttf", 40},
+     {FontType::Roboto, "assets/fonts/roboto.ttf", 40},
+     },
+    FontType::Roboto
 };
 
 class MyTestListener : public ui::EventListener<ui::ClickEvent> {
@@ -22,8 +25,8 @@ class MyTestListener : public ui::EventListener<ui::ClickEvent> {
 };
 
 void add_panel_widgets(Application const& app, ui::Panel& panel) {
-    auto checkbox = app.widget_factory().create_checkbox("Checkbox 1");
-    checkbox.set_margin(ui::Margin{10, 10, 10, 10});
+    auto textbox = app.widget_factory().create_textbox();
+    textbox.set_margin(ui::Margin{10, 10, 10, 10});
 
     panel.add_widgets(
         app.widget_factory().create_button("Button 1"),
@@ -33,7 +36,7 @@ void add_panel_widgets(Application const& app, ui::Panel& panel) {
         app.widget_factory().create_button("Button 5"),
         app.widget_factory().create_button("Button 6"),
         app.widget_factory().create_button("Button 7"),
-        std::move(checkbox)
+        std::move(textbox)
     );
 }
 

@@ -1,1 +1,1 @@
-enum class FontType { Bitcell };
+enum class FontType { Bitcell, Roboto };
