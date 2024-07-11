@@ -9,20 +9,20 @@ namespace ui {
 
     class Textbox : public Widget, public EventListener<MouseEvent, TypedEvent, KeyboardEvent> {
     private:
+        enum class UpdateType { Changed, CursorMoved, Unfocused };
+
         bool m_is_focused;
         std::string m_text;
         std::size_t m_cursor{};
 
         std::size_t m_visible_text_begin;
-        std::size_t m_visible_text_size;
-
         std::string m_visible_text;
         std::size_t m_visible_cursor;
         Vec2i m_cursor_position;
 
         gfx::Font const* m_font;
 
-        void update();
+        void update(UpdateType type);
 
         [[nodiscard]] RectI text_area() const;
 

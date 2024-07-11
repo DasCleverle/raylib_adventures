@@ -1,7 +1,6 @@
 #include "ui/textbox.hpp"
 
 #include <raylib.h>
-#include <string_view>
 
 #include "ui/event_listener.hpp"
 #include "ui/keycode.hpp"
@@ -43,7 +42,7 @@ namespace ui {
         if (not contains) {
             if (m_is_focused) {
                 m_is_focused = false;
-                update();
+                update(UpdateType::Unfocused);
             }
 
             return EventListenerResult::Continue;
@@ -67,7 +66,7 @@ namespace ui {
         }
 
         m_cursor += insert_utf8_codepoint(m_text, m_cursor, event.utf8_codepoint);
-        update();
+        update(UpdateType::Changed);
 
         return EventListenerResult::Continue;
     }
@@ -88,7 +87,7 @@ namespace ui {
                 }
 
                 m_cursor -= erase_utf8_codepoint(m_text, m_cursor - 1);
-                update();
+                update(UpdateType::Changed);
                 break;
 
             case KeyCode::Delete:
@@ -97,7 +96,7 @@ namespace ui {
                 }
 
                 erase_utf8_codepoint(m_text, m_cursor);
-                update();
+                update(UpdateType::Changed);
                 break;
 
             case KeyCode::Left:
@@ -106,7 +105,7 @@ namespace ui {
                 }
 
                 m_cursor = rfind_utf8_boundary(m_text, m_cursor - 1);
-                update();
+                update(UpdateType::CursorMoved);
                 break;
 
             case KeyCode::Right:
@@ -115,7 +114,7 @@ namespace ui {
                 }
 
                 m_cursor = find_utf8_boundary(m_text, m_cursor + 1);
-                update();
+                update(UpdateType::CursorMoved);
                 break;
 
             case KeyCode::Home:
@@ -124,7 +123,7 @@ namespace ui {
                 }
 
                 m_cursor = 0;
-                update();
+                update(UpdateType::CursorMoved);
                 break;
 
             case KeyCode::End:
@@ -133,7 +132,7 @@ namespace ui {
                 }
 
                 m_cursor = m_text.size();
-                update();
+                update(UpdateType::CursorMoved);
 
             default:
                 break;
@@ -142,7 +141,7 @@ namespace ui {
         return EventListenerResult::Handled;
     }
 
-    void Textbox::update() {
+    void Textbox::update(Textbox::UpdateType const type) {
         auto area = text_area();
         auto size = m_font->measure_text(m_text);
 
@@ -154,8 +153,50 @@ namespace ui {
             m_visible_text = m_text;
 
             while (size.x >= area.size.x) {
-                erase_utf8_codepoint(m_visible_text, m_visible_text.size());
+                erase_utf8_codepoint(m_visible_text, m_visible_text.size() - 1);
                 size = m_font->measure_text(m_visible_text);
+            }
+        }
+        else if (type == UpdateType::Changed) {
+            if (m_cursor == m_text.size()) {
+                m_visible_text = m_text;
+                m_visible_text_begin = 0;
+
+                while (size.x >= area.size.x) {
+                    m_visible_text_begin++;
+                    erase_utf8_codepoint(m_visible_text, 0);
+                    size = m_font->measure_text(m_visible_text);
+                }
+
+                m_visible_cursor = m_visible_text.size();
+            }
+        }
+        else if (type == UpdateType::CursorMoved) {
+            if (m_cursor > m_visible_text_begin + m_visible_text.size()) {
+                m_visible_text =
+                    m_text.substr(m_visible_text_begin, m_cursor - m_visible_text_begin);
+
+                do {
+                    m_visible_text_begin++;
+                    erase_utf8_codepoint(m_visible_text, 0);
+                    size = m_font->measure_text(m_visible_text);
+                } while (size.x >= area.size.x);
+
+                m_visible_cursor = m_cursor - m_visible_text_begin;
+            }
+            else if (m_cursor >= m_visible_text_begin) {
+                m_visible_cursor = m_cursor - m_visible_text_begin;
+            }
+            else {
+                m_visible_text = m_text.substr(m_cursor);
+                m_visible_text_begin = m_cursor;
+
+                do {
+                    erase_utf8_codepoint(m_visible_text, m_visible_text.size() - 1);
+                    size = m_font->measure_text(m_visible_text);
+                } while (size.x >= area.size.x);
+
+                m_visible_cursor = 0;
             }
         }
 
