@@ -33,9 +33,6 @@ void add_panel_widgets(Application const& app, ui::Panel& panel) {
         app.widget_factory().create_button("Button 2"),
         app.widget_factory().create_button("Button 3"),
         app.widget_factory().create_button("Button 4"),
-        app.widget_factory().create_button("Button 5"),
-        app.widget_factory().create_button("Button 6"),
-        app.widget_factory().create_button("Button 7"),
         std::move(textbox)
     );
 }
@@ -48,16 +45,16 @@ Application::Application()
 
 void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);
-    m_window.set_target_fps(60);
+    m_window.set_target_fps(165);
 
-    ui::Panel row_panel{"row_panel", ui::RowLayout(1)};
+    // ui::Panel row_panel{"row_panel", ui::RowLayout(1)};
     ui::Panel column_panel{"column_panel", ui::ColumnLayout(1)};
 
-    add_panel_widgets(*this, row_panel);
+    // add_panel_widgets(*this, row_panel);
     add_panel_widgets(*this, column_panel);
 
-    m_ui_panel->set_area({0, 0, 1600, 900});
-    m_ui_panel->add_widgets(std::move(row_panel), std::move(column_panel));
+    m_ui_panel->set_area({300, 200, 500, 400});
+    m_ui_panel->add_widgets(std::move(column_panel));
 
     m_event_dispatcher.listen(m_ui_panel);
 }
