@@ -2,7 +2,6 @@
 
 #include "utils/vec2.hpp"
 
-#include "color.hpp"
 #include "font.hpp"
 #include "renderer_base.hpp"
 #include "window.hpp"

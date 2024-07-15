@@ -30,23 +30,38 @@ namespace gfx {
     }
 
     void Renderer::render_buffer(RenderBuffer const& buffer, Vec2i const position) {
-        DrawTexture(buffer.m_handle->texture, position.x, position.y, RayLibColor{0, 0, 0, 0});
-    }
-
-    void Renderer::render_buffer(RenderBuffer const& buffer, Vec2i const position, RectI const section) {
         DrawTextureRec(
             buffer.m_handle->texture,
             Rectangle{
-                static_cast<float>(section.origin.x),
-                static_cast<float>(section.origin.y),
-                static_cast<float>(section.size.x),
-                static_cast<float>(section.size.y),
+                0,
+                0,
+                static_cast<float>(buffer.m_handle->texture.width),
+                -static_cast<float>(buffer.m_handle->texture.height),
             },
             Vector2{
                 static_cast<float>(position.x),
                 static_cast<float>(position.y),
             },
-            RayLibColor{0, 0, 0, 0}
+            RayLibColor{0xff, 0xff, 0xff, 0xff}
+        );
+    }
+
+    void Renderer::render_buffer(RenderBuffer const& buffer, Vec2i const position, RectI const section) {
+        auto height = buffer.m_handle->texture.height;
+
+        DrawTextureRec(
+            buffer.m_handle->texture,
+            Rectangle{
+                static_cast<float>(section.origin.x),
+                static_cast<float>(-section.origin.y + (height - section.size.y)),
+                static_cast<float>(section.size.x),
+                static_cast<float>(-height + (height - section.size.y)),
+            },
+            Vector2{
+                static_cast<float>(position.x),
+                static_cast<float>(position.y),
+            },
+            RayLibColor{0xff, 0xff, 0xff, 0xff}
         );
     }
 
