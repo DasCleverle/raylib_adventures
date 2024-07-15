@@ -59,7 +59,7 @@ struct Rect final {
 
     [[nodiscard]] constexpr Rect scale_from_center(float factor) const {
         if (factor == 1) {
-            return Rect{*this};
+            return *this;
         }
 
         float sign = factor > 1 ? -1 : 1;
@@ -67,6 +67,19 @@ struct Rect final {
         Vec2f scaled_origin = origin + ((size - scaled_size) / 2.0f) * sign;
 
         return Rect{scaled_origin, scaled_size};
+    }
+
+    [[nodiscard]] constexpr Rect translate(Vec2<T> delta) const {
+        if (delta == Vec2<T>{}) {
+            return *this;
+        }
+
+        Vec2<T> moved_origin{
+            origin.x + delta.x,
+            origin.y + delta.y,
+        };
+
+        return Rect{moved_origin, size};
     }
 };
 
