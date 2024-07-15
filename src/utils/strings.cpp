@@ -81,7 +81,7 @@ std::size_t erase_utf8_codepoint(std::string& target, std::size_t const index) {
 
 std::size_t find_utf8_boundary(std::string const& str, std::size_t index) {
     if (str.size() < index) {
-        throw new std::runtime_error{"index must be less than string size"};
+        throw std::runtime_error{"index must be less than string size"};
     }
 
     if (index == 0) {
@@ -90,7 +90,7 @@ std::size_t find_utf8_boundary(std::string const& str, std::size_t index) {
 
     unsigned char c = str[index];
 
-    // Insid of multibyte utf8 sequences all bytes start with a one bit (0x80)
+    // Inside of multibyte utf8 sequences all bytes start with a one bit (0x80)
     while ((c & 0x80) == 0x80) {
         // Multibyte utf8 sequences start with at least two bit (0xC0)
         if ((c & 0xC0) == 0xC0) {
@@ -111,7 +111,7 @@ std::size_t find_utf8_boundary(std::string const& str, std::size_t index) {
 
 std::size_t rfind_utf8_boundary(std::string const& str, std::size_t index) {
     if (str.size() <= index) {
-        throw new std::runtime_error{"index must be less than string size"};
+        throw std::runtime_error{"index must be less than string size"};
     }
 
     if (index == 0) {
