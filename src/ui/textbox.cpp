@@ -2,10 +2,13 @@
 
 #include <raylib.h>
 
+#include "gfx/color.hpp"
+#include "gfx/render_buffer.hpp"
 #include "ui/event_listener.hpp"
 #include "ui/keycode.hpp"
 #include "ui/keystate.hpp"
 #include "ui/utils.hpp"
+#include "utils/rect.hpp"
 #include "utils/strings.hpp"
 
 namespace ui {
@@ -21,17 +24,7 @@ namespace ui {
 
         renderer.draw_rect_filled(draw_area(), gfx::Colors::LightGray);
         renderer.draw_rect_outline(draw_area(), 4, border_color);
-
-        renderer.draw_text(*m_font, m_visible_text, text_area().origin, gfx::Colors::Black);
-
-        if (m_is_focused) {
-            renderer.draw_line(
-                m_cursor_position,
-                m_cursor_position + Vec2i{0, m_font->size()},
-                2,
-                gfx::Colors::Black
-            );
-        }
+        renderer.render_buffer(m_buffer, text_area().origin, m_visible_area);
     }
 
     EventListenerResult Textbox::handle(MouseEvent const& event) {
@@ -42,7 +35,8 @@ namespace ui {
         if (not contains) {
             if (m_is_focused) {
                 m_is_focused = false;
-                update(UpdateType::Unfocused);
+                m_visible_area.origin = Vec2i{0, 0};
+                update();
             }
 
             return EventListenerResult::Continue;
@@ -54,6 +48,7 @@ namespace ui {
 
         if (not m_is_focused and is_pressed) {
             m_is_focused = true;
+            update();
             return EventListenerResult::Handled;
         }
 
@@ -66,7 +61,7 @@ namespace ui {
         }
 
         m_cursor += insert_utf8_codepoint(m_text, m_cursor, event.utf8_codepoint);
-        update(UpdateType::Changed);
+        update();
 
         return EventListenerResult::Continue;
     }
@@ -87,7 +82,7 @@ namespace ui {
                 }
 
                 m_cursor -= erase_utf8_codepoint(m_text, m_cursor - 1);
-                update(UpdateType::Changed);
+                update();
                 break;
 
             case KeyCode::Delete:
@@ -96,7 +91,7 @@ namespace ui {
                 }
 
                 erase_utf8_codepoint(m_text, m_cursor);
-                update(UpdateType::Changed);
+                update();
                 break;
 
             case KeyCode::Left:
@@ -105,7 +100,7 @@ namespace ui {
                 }
 
                 m_cursor = rfind_utf8_boundary(m_text, m_cursor - 1);
-                update(UpdateType::CursorMoved);
+                update();
                 break;
 
             case KeyCode::Right:
@@ -114,7 +109,7 @@ namespace ui {
                 }
 
                 m_cursor = find_utf8_boundary(m_text, m_cursor + 1);
-                update(UpdateType::CursorMoved);
+                update();
                 break;
 
             case KeyCode::Home:
@@ -123,7 +118,7 @@ namespace ui {
                 }
 
                 m_cursor = 0;
-                update(UpdateType::CursorMoved);
+                update();
                 break;
 
             case KeyCode::End:
@@ -132,7 +127,8 @@ namespace ui {
                 }
 
                 m_cursor = m_text.size();
-                update(UpdateType::CursorMoved);
+                update();
+                break;
 
             default:
                 break;
@@ -141,76 +137,85 @@ namespace ui {
         return EventListenerResult::Handled;
     }
 
-    void Textbox::update(Textbox::UpdateType const type) {
-        auto area = text_area();
-        auto size = m_font->measure_text(m_text);
+    void Textbox::update() {
+        auto const cursor_position_end = m_font->measure_text(m_text.substr(0, m_cursor));
+        auto const cursor_position_start = cursor_position_end.hadamard_product({1, 0});
 
-        if (size.x <= area.size.x) {
-            m_visible_text = m_text;
-            m_visible_cursor = m_cursor;
-        }
-        else if (not m_is_focused) {
-            m_visible_text = m_text;
+        m_buffer.render_to([&](gfx::BufferRenderer& renderer) {
+            renderer.clear_background(gfx::Colors::Blank);
+            renderer.draw_text(*m_font, m_text, {0, 0}, gfx::Colors::Black);
 
-            while (size.x >= area.size.x) {
-                erase_utf8_codepoint(m_visible_text, m_visible_text.size() - 1);
-                size = m_font->measure_text(m_visible_text);
+            if (m_is_focused) {
+                renderer.draw_line(
+                    {std::max(1, cursor_position_start.x), cursor_position_start.y},
+                    {std::max(1, cursor_position_end.x), cursor_position_end.y},
+                    2,
+                    gfx::Colors::Black
+                );
             }
-        }
-        else if (type == UpdateType::Changed) {
-            if (m_cursor == m_text.size()) {
-                m_visible_text = m_text;
-                m_visible_text_begin = 0;
+        });
 
-                while (size.x >= area.size.x) {
-                    m_visible_text_begin++;
-                    erase_utf8_codepoint(m_visible_text, 0);
-                    size = m_font->measure_text(m_visible_text);
-                }
+        auto const text_size = m_font->measure_text(m_text);
 
-                m_visible_cursor = m_visible_text.size();
-            }
-        }
-        else if (type == UpdateType::CursorMoved) {
-            if (m_cursor > m_visible_text_begin + m_visible_text.size()) {
-                m_visible_text =
-                    m_text.substr(m_visible_text_begin, m_cursor - m_visible_text_begin);
+        resize_buffer_if_needed({text_size.x, text_area().size.y});
+        update_visible_area(cursor_position_start, text_size);
 
-                do {
-                    m_visible_text_begin++;
-                    erase_utf8_codepoint(m_visible_text, 0);
-                    size = m_font->measure_text(m_visible_text);
-                } while (size.x >= area.size.x);
+        m_last_cursor = m_cursor;
+    }
 
-                m_visible_cursor = m_cursor - m_visible_text_begin;
-            }
-            else if (m_cursor >= m_visible_text_begin) {
-                m_visible_cursor = m_cursor - m_visible_text_begin;
-            }
-            else {
-                m_visible_text = m_text.substr(m_cursor);
-                m_visible_text_begin = m_cursor;
+    void Textbox::update_visible_area(Vec2i const cursor_position, Vec2i const text_size) {
+        auto const area = text_area();
+        auto const fits_in_text_area = text_size.x <= area.size.x;
 
-                do {
-                    erase_utf8_codepoint(m_visible_text, m_visible_text.size() - 1);
-                    size = m_font->measure_text(m_visible_text);
-                } while (size.x >= area.size.x);
+        if (fits_in_text_area) {
+            m_visible_area = RectI{
+                Vec2i{0, 0},
+                area.size
+            };
 
-                m_visible_cursor = 0;
-            }
+            return;
         }
 
-        auto text_until_cursor = m_visible_text.substr(0, m_visible_cursor);
-        auto until_cursor_size = m_font->measure_text(text_until_cursor);
+        if (m_cursor == m_last_cursor) {
+            return;
+        }
 
-        m_cursor_position = Vec2i{
-            area.origin.x + until_cursor_size.x,
-            area.origin.y,
-        };
+        auto const moved_right = m_cursor > m_last_cursor;
+        auto const visible_cursor_x = cursor_position.x - m_visible_area.origin.x;
+
+        // clang-format off
+        auto const moved_inside_visible_area = moved_right
+            ? visible_cursor_x <= area.size.x
+            : visible_cursor_x >= 0;
+
+        if (moved_inside_visible_area) {
+            return;
+        }
+
+        auto const new_x = moved_right
+            ? cursor_position.x - m_visible_area.size.x + 2
+            : std::max(0, cursor_position.x - 2);
+        // clang-format on
+
+        m_visible_area.origin.x = new_x;
     }
 
     [[nodiscard]] RectI Textbox::text_area() const {
         return Margin{6, 6, 6, 6}.apply(draw_area());
+    }
+
+    void Textbox::set_area(RectI const area) {
+        Widget::set_area(area);
+        resize_buffer_if_needed(text_area().size);
+        update();
+    }
+
+    void Textbox::resize_buffer_if_needed(Vec2i required_size) {
+        if (m_buffer.size().x >= required_size.x and m_buffer.size().y >= required_size.y) {
+            return;
+        }
+
+        m_buffer.resize(required_size + Vec2i{text_area().size.x, 0});
     }
 
 }  // namespace ui

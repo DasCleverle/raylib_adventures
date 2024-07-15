@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "gfx/render_buffer.hpp"
 #include "ui/event.hpp"
 #include "ui/event_listener.hpp"
 #include "ui/widget.hpp"
@@ -9,20 +10,20 @@ namespace ui {
 
     class Textbox : public Widget, public EventListener<MouseEvent, TypedEvent, KeyboardEvent> {
     private:
-        enum class UpdateType { Changed, CursorMoved, Unfocused };
-
-        bool m_is_focused;
+        bool m_is_focused{false};
         std::string m_text;
         std::size_t m_cursor{};
+        std::size_t m_last_cursor{};
 
-        std::size_t m_visible_text_begin;
-        std::string m_visible_text;
-        std::size_t m_visible_cursor;
-        Vec2i m_cursor_position;
+        gfx::RenderBuffer m_buffer;
+        RectI m_visible_area;
 
         gfx::Font const* m_font;
 
-        void update(UpdateType type);
+        void update();
+        void update_visible_area(Vec2i cursor_position, Vec2i text_size);
+
+        void resize_buffer_if_needed(Vec2i required_size);
 
         [[nodiscard]] RectI text_area() const;
 
@@ -37,6 +38,8 @@ namespace ui {
         ~Textbox() = default;
 
         void render(gfx::Renderer& renderer) const override;
+
+        void set_area(RectI area) override;
 
         EventListenerResult handle(MouseEvent const& event) override;
 
