@@ -5,6 +5,8 @@
 #include <format>
 #include <vector>
 
+#include "utils/strings.hpp"
+
 namespace gfx {
 
     static std::array<std::pair<int, int>, 2> s_codepoint_ranges = {
@@ -41,6 +43,15 @@ namespace gfx {
 
     [[nodiscard]] Vec2i Font::measure_text(std::string const& text) const {
         auto const size = MeasureTextEx(*m_handle, text.c_str(), m_size, 0.0f);
+        return Vec2i{
+            static_cast<int>(std::ceil(size.x)),
+            static_cast<int>(std::ceil(size.y)),
+        };
+    }
+
+    [[nodiscard]] Vec2i Font::measure_text(std::u32string_view text) const {
+        auto const utf8_string = utf32to8(text);
+        auto const size = MeasureTextEx(*m_handle, utf8_string.c_str(), m_size, 0.0f);
         return Vec2i{
             static_cast<int>(std::ceil(size.x)),
             static_cast<int>(std::ceil(size.y)),

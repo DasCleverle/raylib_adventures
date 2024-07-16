@@ -1,5 +1,4 @@
-#include <cstddef>
-#include <cstdint>
+#include <format>
 #include <string>
 #include <vector>
 
@@ -25,10 +24,30 @@ std::string join(I begin, I end, char delimiter) {
     return result;
 }
 
-std::size_t insert_utf8_codepoint(std::string& target, std::size_t index, std::uint32_t codepoint);
+std::string utf32to8(std::u32string const& str);
 
-std::size_t erase_utf8_codepoint(std::string& target, std::size_t index);
+std::string utf32to8(std::u32string_view const& str);
 
-std::size_t find_utf8_boundary(std::string const& str, std::size_t index);
+template<typename CharT>
+struct std::formatter<std::u32string, CharT> {
 
-std::size_t rfind_utf8_boundary(std::string const& str, std::size_t index);
+    constexpr auto parse(std::format_parse_context& context) {
+        return context.begin();
+    }
+
+    auto format(std::u32string const& str, std::format_context& context) const {
+        return std::format_to(context.out(), "{}", utf32to8(str));
+    }
+};
+
+template<typename CharT>
+struct std::formatter<std::u32string_view, CharT> {
+
+    constexpr auto parse(std::format_parse_context& context) {
+        return context.begin();
+    }
+
+    auto format(std::u32string const& str, std::format_context& context) const {
+        return std::format_to(context.out(), "{}", utf32to8(str));
+    }
+};

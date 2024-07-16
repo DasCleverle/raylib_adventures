@@ -11,7 +11,7 @@ namespace ui {
     class Textbox : public Widget, public EventListener<MouseEvent, TypedEvent, KeyboardEvent> {
     private:
         bool m_is_focused{false};
-        std::string m_text;
+        std::u32string m_text;
         std::size_t m_cursor{};
         std::size_t m_last_cursor{};
 

@@ -53,7 +53,7 @@ void Application::init() {
     // add_panel_widgets(*this, row_panel);
     add_panel_widgets(*this, column_panel);
 
-    m_ui_panel->set_area({300, 200, 500, 400});
+    m_ui_panel->set_area({100, 100, 500, 400});
     m_ui_panel->add_widgets(std::move(column_panel));
 
     m_event_dispatcher.listen(m_ui_panel);

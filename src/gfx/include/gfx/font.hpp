@@ -34,5 +34,6 @@ namespace gfx {
         }
 
         [[nodiscard]] Vec2i measure_text(std::string const& text) const;
+        [[nodiscard]] Vec2i measure_text(std::u32string_view text) const;
     };
 }  // namespace gfx

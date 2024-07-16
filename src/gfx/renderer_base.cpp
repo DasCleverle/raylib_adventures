@@ -31,6 +31,23 @@ namespace gfx {
         );
     }
 
+    void RendererBase::draw_text(
+        Font const& font,
+        std::u32string_view text,
+        Vec2i const position,
+        Color const color
+    ) {
+        DrawTextCodepoints(
+            *font.m_handle,
+            reinterpret_cast<int const*>(text.data()),
+            text.size(),
+            {static_cast<float>(position.x), static_cast<float>(position.y)},
+            font.m_size,
+            0,
+            to_raylib_color(color)
+        );
+    }
+
     void RendererBase::draw_rect_filled(RectI const rect, Color const color) {
         DrawRectangle(rect.origin.x, rect.origin.y, rect.size.x, rect.size.y, to_raylib_color(color));
     }

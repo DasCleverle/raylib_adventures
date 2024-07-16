@@ -10,6 +10,7 @@ class RaylibAdventuresRecipe(ConanFile):
         self.requires("raylib/5.0")
         self.requires("tl-expected/1.1.0")
         self.requires("tl-optional/1.1.0")
+        self.requires("utfcpp/4.0.4")
 
     def generate(self):
         tc = CMakeToolchain(self)

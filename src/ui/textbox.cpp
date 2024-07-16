@@ -60,7 +60,8 @@ namespace ui {
             return EventListenerResult::Continue;
         }
 
-        m_cursor += insert_utf8_codepoint(m_text, m_cursor, event.utf8_codepoint);
+        m_text.insert(m_cursor, 1, event.utf8_codepoint);
+        m_cursor++;
         update();
 
         return EventListenerResult::Continue;
@@ -81,7 +82,8 @@ namespace ui {
                     break;
                 }
 
-                m_cursor -= erase_utf8_codepoint(m_text, m_cursor - 1);
+                m_text.erase(m_cursor - 1, 1);
+                m_cursor--;
                 update();
                 break;
 
@@ -90,7 +92,7 @@ namespace ui {
                     break;
                 }
 
-                erase_utf8_codepoint(m_text, m_cursor);
+                m_text.erase(m_cursor, 1);
                 update();
                 break;
 
@@ -99,7 +101,7 @@ namespace ui {
                     break;
                 }
 
-                m_cursor = rfind_utf8_boundary(m_text, m_cursor - 1);
+                m_cursor--;
                 update();
                 break;
 
@@ -108,7 +110,7 @@ namespace ui {
                     break;
                 }
 
-                m_cursor = find_utf8_boundary(m_text, m_cursor + 1);
+                m_cursor++;
                 update();
                 break;
 
@@ -138,7 +140,8 @@ namespace ui {
     }
 
     void Textbox::update() {
-        auto const cursor_position_end = m_font->measure_text(m_text.substr(0, m_cursor));
+        auto const cursor_position_end =
+            m_font->measure_text(std::u32string_view{m_text.data(), m_cursor});
         auto const cursor_position_start = cursor_position_end.hadamard_product({1, 0});
 
         m_buffer.render_to([&](gfx::BufferRenderer& renderer) {
