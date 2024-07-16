@@ -164,6 +164,8 @@ namespace ui {
         update_visible_area(cursor_position_start, text_size);
 
         m_last_cursor = m_cursor;
+        m_last_text_length = m_text.size();
+        m_last_text_size = text_size;
     }
 
     void Textbox::update_visible_area(Vec2i const cursor_position, Vec2i const text_size) {
@@ -183,8 +185,14 @@ namespace ui {
             return;
         }
 
+        auto const deleted_chars = m_last_text_length > m_text.size();
         auto const moved_right = m_cursor > m_last_cursor;
         auto const visible_cursor_x = cursor_position.x - m_visible_area.origin.x;
+
+        if (deleted_chars and not moved_right) {
+            m_visible_area.origin.x -= m_last_text_size.x - text_size.x;
+            return;
+        }
 
         // clang-format off
         auto const moved_inside_visible_area = moved_right

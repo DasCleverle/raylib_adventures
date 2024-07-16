@@ -11,12 +11,16 @@ namespace ui {
     class Textbox : public Widget, public EventListener<MouseEvent, TypedEvent, KeyboardEvent> {
     private:
         bool m_is_focused{false};
-        std::u32string m_text;
-        std::size_t m_cursor{};
-        std::size_t m_last_cursor{};
 
         gfx::RenderBuffer m_buffer;
         RectI m_visible_area;
+
+        std::u32string m_text;
+        std::size_t m_cursor{};
+
+        std::size_t m_last_cursor{};
+        std::size_t m_last_text_length{};
+        Vec2i m_last_text_size{};
 
         gfx::Font const* m_font;
 
