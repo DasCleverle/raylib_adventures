@@ -10,6 +10,8 @@ namespace ui {
 
     class Textbox : public Widget, public EventListener<MouseEvent, TypedEvent, KeyboardEvent> {
     private:
+        gfx::Font const* m_font;
+
         bool m_is_focused{false};
 
         gfx::RenderBuffer m_buffer;
@@ -22,12 +24,17 @@ namespace ui {
         std::size_t m_last_text_length{};
         Vec2i m_last_text_size{};
 
-        gfx::Font const* m_font;
+        bool m_is_selecting{false};
+        std::optional<std::size_t> m_selection_begin{};
+        std::size_t m_selection_length{};
 
         void update();
         void update_visible_area(Vec2i cursor_position, Vec2i text_size);
 
         void resize_buffer_if_needed(Vec2i required_size);
+
+        void erase_selection();
+        void reset_selection();
 
         [[nodiscard]] RectI text_area() const;
 

@@ -1,6 +1,7 @@
 #include "ui/textbox.hpp"
 
 #include <raylib.h>
+#include <optional>
 
 #include "gfx/color.hpp"
 #include "gfx/render_buffer.hpp"
@@ -36,6 +37,9 @@ namespace ui {
             if (m_is_focused) {
                 m_is_focused = false;
                 m_visible_area.origin = Vec2i{0, 0};
+                m_is_selecting = false;
+                reset_selection();
+
                 update();
             }
 
@@ -60,6 +64,7 @@ namespace ui {
             return EventListenerResult::Continue;
         }
 
+        erase_selection();
         m_text.insert(m_cursor, 1, event.utf8_codepoint);
         m_cursor++;
         update();
@@ -68,6 +73,11 @@ namespace ui {
     }
 
     EventListenerResult Textbox::handle(KeyboardEvent const& event) {
+        if (event.code == KeyCode::LeftShift or event.code == KeyCode::RightShift) {
+            m_is_selecting = event.state == KeyState::Pressed;
+            return EventListenerResult::Continue;
+        }
+
         if (not m_is_focused or event.state == KeyState::Released) {
             return EventListenerResult::Continue;
         }
@@ -82,8 +92,14 @@ namespace ui {
                     break;
                 }
 
-                m_text.erase(m_cursor - 1, 1);
-                m_cursor--;
+                if (m_selection_begin.has_value()) {
+                    erase_selection();
+                }
+                else {
+                    m_text.erase(m_cursor - 1, 1);
+                    m_cursor--;
+                }
+
                 update();
                 break;
 
@@ -92,7 +108,13 @@ namespace ui {
                     break;
                 }
 
-                m_text.erase(m_cursor, 1);
+                if (m_selection_begin.has_value()) {
+                    erase_selection();
+                }
+                else {
+                    m_text.erase(m_cursor, 1);
+                }
+
                 update();
                 break;
 
@@ -102,6 +124,27 @@ namespace ui {
                 }
 
                 m_cursor--;
+
+                if (m_is_selecting) {
+                    if (not m_selection_begin.has_value()) {
+                        m_selection_begin = m_cursor;
+                        m_selection_length = 1;
+                    }
+                    else if (m_cursor < m_selection_begin) {
+                        m_selection_begin = m_cursor;
+                        m_selection_length++;
+                    }
+                    else if (m_cursor > m_selection_begin) {
+                        m_selection_length--;
+                    }
+                    else {
+                        reset_selection();
+                    }
+                }
+                else {
+                    reset_selection();
+                }
+
                 update();
                 break;
 
@@ -111,6 +154,31 @@ namespace ui {
                 }
 
                 m_cursor++;
+
+                if (m_is_selecting) {
+                    if (not m_selection_begin.has_value()) {
+                        m_selection_begin = m_cursor - 1;
+                        m_selection_length = 1;
+                    }
+                    else if (m_cursor - 1 == m_selection_begin and m_selection_length > 0) {
+                        m_selection_begin.value()++;
+                        m_selection_length--;
+                    }
+                    else if (m_cursor - 1 == m_selection_begin and m_selection_length == 0) {
+                        m_selection_begin = m_cursor - 1;
+                        m_selection_length = 1;
+                    }
+                    else if (m_cursor > m_selection_begin) {
+                        m_selection_length++;
+                    }
+                    else {
+                        reset_selection();
+                    }
+                }
+                else {
+                    reset_selection();
+                }
+
                 update();
                 break;
 
@@ -119,7 +187,26 @@ namespace ui {
                     break;
                 }
 
+                if (m_is_selecting) {
+                    if (not m_selection_begin.has_value()) {
+                        m_selection_length = m_cursor;
+                        m_selection_begin = 0;
+                    }
+                    else if (m_cursor == m_selection_begin) {
+                        m_selection_length += m_selection_begin.value();
+                        m_selection_begin = 0;
+                    }
+                    else if (m_cursor > m_selection_begin) {
+                        m_selection_length = m_selection_begin.value();
+                        m_selection_begin = 0;
+                    }
+                }
+                else {
+                    reset_selection();
+                }
+
                 m_cursor = 0;
+
                 update();
                 break;
 
@@ -128,7 +215,25 @@ namespace ui {
                     break;
                 }
 
+                if (m_is_selecting) {
+                    if (not m_selection_begin.has_value()) {
+                        m_selection_length = m_text.size() - m_cursor;
+                        m_selection_begin = m_cursor;
+                    }
+                    else if (m_cursor == m_selection_begin) {
+                        m_selection_begin = m_cursor + m_selection_length;
+                        m_selection_length = m_text.size() - m_selection_begin.value();
+                    }
+                    else if (m_cursor > m_selection_begin) {
+                        m_selection_length += m_text.size() - m_selection_begin.value() - 1;
+                    }
+                }
+                else {
+                    reset_selection();
+                }
+
                 m_cursor = m_text.size();
+
                 update();
                 break;
 
@@ -140,8 +245,9 @@ namespace ui {
     }
 
     void Textbox::update() {
-        auto const cursor_position_end =
-            m_font->measure_text(std::u32string_view{m_text.data(), m_cursor});
+        auto const cursor_position_end = m_font->measure_text(
+            std::u32string_view{m_text.data(), m_cursor}
+        );
         auto const cursor_position_start = cursor_position_end.hadamard_product({1, 0});
 
         m_buffer.render_to([&](gfx::BufferRenderer& renderer) {
@@ -155,6 +261,25 @@ namespace ui {
                     2,
                     gfx::Colors::Black
                 );
+            }
+
+            if (m_selection_begin.has_value()) {
+                auto const until_selection_begin = m_font->measure_text(
+                    std::u32string_view{m_text.data(), m_selection_begin.value()}
+                );
+                auto const selection_size = m_font->measure_text({
+                    std::u32string_view{// clang-format off
+                        m_text.begin() + m_selection_begin.value(),
+                        m_text.begin() + m_selection_begin.value() + m_selection_length
+                    }  // clang-format on
+                });
+
+                auto const selected_area = RectI{
+                    {until_selection_begin.x, 0},
+                    selection_size
+                };
+
+                renderer.draw_rect_filled(selected_area, gfx::Colors::White);
             }
         });
 
@@ -227,6 +352,22 @@ namespace ui {
         }
 
         m_buffer.resize(required_size + Vec2i{text_area().size.x, 0});
+    }
+
+    void Textbox::erase_selection() {
+        if (not m_selection_begin.has_value()) {
+            return;
+        }
+
+        m_text.erase(m_selection_begin.value(), m_selection_length);
+        m_cursor = m_selection_begin.value();
+
+        reset_selection();
+    }
+
+    void Textbox::reset_selection() {
+        m_selection_begin = std::nullopt;
+        m_selection_length = 0;
     }
 
 }  // namespace ui
