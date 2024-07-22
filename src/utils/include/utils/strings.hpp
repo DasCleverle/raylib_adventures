@@ -28,8 +28,8 @@ std::string utf32to8(std::u32string const& str);
 
 std::string utf32to8(std::u32string_view const& str);
 
-template<typename CharT>
-struct std::formatter<std::u32string, CharT> {
+template<>
+struct std::formatter<std::u32string> {
 
     constexpr auto parse(std::format_parse_context& context) {
         return context.begin();
@@ -40,14 +40,14 @@ struct std::formatter<std::u32string, CharT> {
     }
 };
 
-template<typename CharT>
-struct std::formatter<std::u32string_view, CharT> {
+template<>
+struct std::formatter<std::u32string_view> {
 
     constexpr auto parse(std::format_parse_context& context) {
         return context.begin();
     }
 
-    auto format(std::u32string const& str, std::format_context& context) const {
+    auto format(std::u32string_view const& str, std::format_context& context) const {
         return std::format_to(context.out(), "{}", utf32to8(str));
     }
 };

@@ -111,8 +111,35 @@ namespace ui {
             return EventListenerResult::Continue;
         }
 
-        if (not m_is_focused and is_pressed) {
-            m_is_focused = true;
+        if (is_pressed) {
+            if (not m_is_focused) {
+                m_is_focused = true;
+            }
+
+            auto const relative_click_position = event.position - text_area().origin;
+            auto text_size = m_font->measure_text(m_text);
+
+            if (text_size.x <= relative_click_position.x) {
+                m_cursor = m_text.size();
+            }
+            else {
+                for (std::size_t i = m_text.size(); i > 0; i--) {
+                    std::u32string_view text{m_text.data(), i};
+                    text_size = m_font->measure_text(text);
+
+                    std::u32string_view last_char{m_text.data() + i, 1};
+                    auto const last_char_size = m_font->measure_text(last_char);
+
+                    if (text_size.x <= relative_click_position.x + last_char_size.x / 2) {
+                        m_cursor = i;
+                        break;
+                    }
+                    else {
+                        m_cursor = 0;
+                    }
+                }
+            }
+
             update();
             return EventListenerResult::Handled;
         }
@@ -317,11 +344,9 @@ namespace ui {
                 auto const until_selection_begin = m_font->measure_text(
                     std::u32string_view{m_text.data(), m_selection_begin.value()}
                 );
-                auto const selection_size = m_font->measure_text({
-                    std::u32string_view{// clang-format off
-                        m_text.begin() + m_selection_begin.value(),
-                        m_text.begin() + m_selection_begin.value() + m_selection_length
-                    }  // clang-format on
+                auto const selection_size = m_font->measure_text(std::u32string_view{
+                    m_text.begin() + m_selection_begin.value(),
+                    m_text.begin() + m_selection_begin.value() + m_selection_length
                 });
 
                 RectF selected_area{

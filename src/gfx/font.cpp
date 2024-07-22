@@ -51,7 +51,7 @@ namespace gfx {
 
     [[nodiscard]] Vec2i Font::measure_text(std::u32string_view text) const {
         if (text.size() == 0) {
-            return {0, 0};
+            return {0, m_size};
         }
 
         auto const utf8_string = utf32to8(text);
