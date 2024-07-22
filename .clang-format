@@ -50,6 +50,7 @@ LineEnding: LF
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 PackConstructorInitializers: NextLineOnly
+PenaltyBreakAssignment: 100
 PenaltyReturnTypeOnItsOwnLine: 300
 PenaltyExcessCharacter: 20
 PointerAlignment: Left

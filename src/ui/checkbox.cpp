@@ -59,8 +59,8 @@ namespace ui {
     }
 
     EventListenerResult Checkbox::handle(MouseEvent const& event) {
-        auto contains =
-            m_label.text_area().contains(event.position) or box_area().contains(event.position);
+        auto contains = m_label.text_area().contains(event.position)
+                        or box_area().contains(event.position);
         auto is_left = event.button == MouseButton::Left;
         auto is_pressed = event.state == KeyState::Pressed;
 

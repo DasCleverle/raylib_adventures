@@ -48,6 +48,16 @@ namespace ui {
         MouseEvent event;
     };
 
-    using Event =
-        std::variant<KeyboardEvent, TypedEvent, MouseEvent, MouseMoveEvent, MouseWheelEvent, ClickEvent, CheckedEvent>;
+    // clang-format off
+    using Event = std::variant<
+        KeyboardEvent,
+        TypedEvent,
+        MouseEvent,
+        MouseMoveEvent,
+        MouseWheelEvent,
+        ClickEvent,
+        CheckedEvent
+    >;
+    // clang-format on
+
 }  // namespace ui
