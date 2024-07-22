@@ -9,6 +9,7 @@ struct RenderTexture;
 namespace gfx {
 
     class Renderer;
+    class Shader;
 
     class BufferRenderer final : public RendererBase {
     public:
@@ -18,10 +19,13 @@ namespace gfx {
         BufferRenderer& operator=(BufferRenderer const&) = delete;
         BufferRenderer& operator=(BufferRenderer&&) = delete;
         ~BufferRenderer() = default;
+
+        void with_shader(Shader const& shader, std::function<void(BufferRenderer&)> render);
     };
 
     class RenderBuffer final {
         friend class Renderer;
+        friend class Shader;
 
     private:
 

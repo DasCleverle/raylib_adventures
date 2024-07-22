@@ -4,6 +4,10 @@
 
 namespace gfx {
 
+    void BufferRenderer::with_shader(Shader const& shader, std::function<void(BufferRenderer&)> render) {
+        RendererBase::with_shader(shader, [this, render](auto& _) { render(*this); });
+    }
+
     void RenderBuffer::Deleter::operator()(RenderTexture2D const* handle) const {
         UnloadRenderTexture(*handle);
         delete handle;

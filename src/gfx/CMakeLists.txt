@@ -5,13 +5,15 @@ add_library(gfx STATIC
     include/gfx/font.hpp
     include/gfx/font_config.hpp
     include/gfx/font_manager.hpp
+    include/gfx/render_buffer.hpp
     include/gfx/renderer.hpp
     include/gfx/renderer_base.hpp
-    include/gfx/render_buffer.hpp
+    include/gfx/shader.hpp
     include/gfx/window.hpp
     render_buffer.cpp
     renderer.cpp
     renderer_base.cpp
+    shader.cpp
     window.cpp
 
 )

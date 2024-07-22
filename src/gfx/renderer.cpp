@@ -47,7 +47,7 @@ namespace gfx {
     }
 
     void Renderer::render_buffer(RenderBuffer const& buffer, Vec2i const position, RectI const section) {
-        auto height = buffer.m_handle->texture.height;
+        auto const height = buffer.m_handle->texture.height;
 
         DrawTextureRec(
             buffer.m_handle->texture,
@@ -63,6 +63,10 @@ namespace gfx {
             },
             RayLibColor{0xff, 0xff, 0xff, 0xff}
         );
+    }
+
+    void Renderer::with_shader(Shader const& shader, std::function<void(Renderer&)> render) {
+        RendererBase::with_shader(shader, [this, render](auto& _) { render(*this); });
     }
 
 }  // namespace gfx

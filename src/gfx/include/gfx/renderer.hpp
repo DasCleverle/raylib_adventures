@@ -29,5 +29,7 @@ namespace gfx {
         void render_buffer(RenderBuffer const& buffer, Vec2i position);
 
         void render_buffer(RenderBuffer const& buffer, Vec2i position, RectI section);
+
+        void with_shader(Shader const& shader, std::function<void(Renderer&)> render);
     };
 }  // namespace gfx

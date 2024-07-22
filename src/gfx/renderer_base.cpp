@@ -84,4 +84,10 @@ namespace gfx {
         DrawLineEx(start, end, thickness, to_raylib_color(color));
     }
 
+    void RendererBase::with_shader(Shader const& shader, std::function<void(RendererBase&)> render) {
+        BeginShaderMode(*shader.m_handle);
+        render(*this);
+        EndShaderMode();
+    }
+
 }  // namespace gfx
