@@ -14,6 +14,7 @@ add_library(ui STATIC
     include/ui/event_source.hpp
     include/ui/keycode.hpp
     include/ui/label.hpp
+    include/ui/mouse.hpp
     include/ui/mouse_button.hpp
     include/ui/row_layout.hpp
     include/ui/textbox.hpp
@@ -21,6 +22,7 @@ add_library(ui STATIC
     include/ui/widget.hpp
     include/ui/widget_factory.hpp
     label.cpp
+    mouse.cpp
     row_layout.cpp
     textbox.cpp
 )

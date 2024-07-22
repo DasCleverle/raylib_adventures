@@ -147,6 +147,22 @@ namespace ui {
         return EventListenerResult::Continue;
     }
 
+    EventListenerResult Textbox::handle(MouseMoveEvent const& event) {
+        auto contains_origin = draw_area().contains(event.origin);
+        auto contains_target = draw_area().contains(event.target);
+
+        if (contains_origin and not contains_target and m_prev_mouse_cursor.has_value()) {
+            Mouse::set_cursor(m_prev_mouse_cursor.value());
+            m_prev_mouse_cursor = std::nullopt;
+        }
+        else if (contains_target and Mouse::current_cursor() != MouseCursor::IBeam) {
+            m_prev_mouse_cursor = Mouse::current_cursor();
+            Mouse::set_cursor(MouseCursor::IBeam);
+        }
+
+        return EventListenerResult::Continue;
+    }
+
     EventListenerResult Textbox::handle(TypedEvent const& event) {
         if (not m_is_focused) {
             return EventListenerResult::Continue;
@@ -157,7 +173,7 @@ namespace ui {
         m_cursor++;
         update();
 
-        return EventListenerResult::Continue;
+        return EventListenerResult::Handled;
     }
 
     EventListenerResult Textbox::handle(KeyboardEvent const& event) {

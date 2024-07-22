@@ -4,11 +4,13 @@
 #include "gfx/render_buffer.hpp"
 #include "ui/event.hpp"
 #include "ui/event_listener.hpp"
+#include "ui/mouse.hpp"
 #include "ui/widget.hpp"
 
 namespace ui {
 
-    class Textbox : public Widget, public EventListener<MouseEvent, TypedEvent, KeyboardEvent> {
+    class Textbox : public Widget,
+                    public EventListener<MouseEvent, MouseMoveEvent, TypedEvent, KeyboardEvent> {
     private:
         gfx::Font const* m_font;
 
@@ -29,6 +31,8 @@ namespace ui {
         bool m_is_selecting{false};
         std::optional<std::size_t> m_selection_begin{};
         std::size_t m_selection_length{};
+
+        std::optional<MouseCursor> m_prev_mouse_cursor;
 
         void update();
         void update_visible_area(Vec2i cursor_position, Vec2i text_size);
@@ -55,6 +59,8 @@ namespace ui {
         void set_area(RectI area) override;
 
         EventListenerResult handle(MouseEvent const& event) override;
+
+        EventListenerResult handle(MouseMoveEvent const& event) override;
 
         EventListenerResult handle(TypedEvent const& event) override;
 
