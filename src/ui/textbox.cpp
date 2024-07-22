@@ -1,10 +1,11 @@
 #include "ui/textbox.hpp"
 
-#include <raylib.h>
 #include <optional>
+#include <string_view>
 
 #include "gfx/color.hpp"
 #include "gfx/render_buffer.hpp"
+#include "gfx/shader.hpp"
 #include "ui/event_listener.hpp"
 #include "ui/keycode.hpp"
 #include "ui/keystate.hpp"
@@ -12,19 +13,79 @@
 #include "utils/rect.hpp"
 #include "utils/strings.hpp"
 
+static constexpr char const* s_selection_vertex_shader_code = R"(
+    #version 330
+
+    in vec3 vertexPosition;
+    in vec2 vertexTexCoord;
+    in vec4 vertexColor;
+
+    out vec3 fragPosition;
+    out vec2 fragTexCoord;
+    out vec4 fragColor;
+
+    uniform mat4 mvp;
+
+    void main() {
+        fragPosition = vertexPosition;
+        fragTexCoord = vertexTexCoord;
+        fragColor = vertexColor;
+
+        gl_Position = mvp * vec4(vertexPosition, 1.0);;
+    }
+)";
+
+static constexpr char const* s_selection_fragment_shader_code = R"(
+    #version 330
+
+    in vec3 fragPosition;
+    in vec2 fragTexCoord;
+    in vec4 fragColor;
+
+    uniform vec2 selectionOrigin;
+    uniform vec2 selectionSize;
+    uniform sampler2D texture0;
+
+    out vec4 finalColor;
+
+    bool contains(vec2 origin, vec2 size, vec3 position) {
+        return position.x >= origin.x
+            && position.y >= origin.y
+            && position.x <= origin.x + size.x
+            && position.y <= origin.y + size.y;
+    }
+
+    void main() {
+        vec4 texColor = texture(texture0, fragTexCoord);
+
+        if (contains(selectionOrigin, selectionSize, fragPosition)) {
+            finalColor = vec4(1.0 - fragColor.rgb, fragColor.a) * texColor;
+        }
+        else {
+            finalColor = fragColor * texColor;
+        }
+    }
+)";
+
 namespace ui {
 
     Textbox::Textbox(std::string&& id, gfx::Font const& font)
-        : Widget{std::move(id)}, m_font{&font} {}
+        : Widget{std::move(id)},
+          m_font{&font},
+          m_selection_shader{gfx::Shader::from_memory(
+              s_selection_vertex_shader_code,
+              s_selection_fragment_shader_code
+          )} {}
 
     Textbox::Textbox(gfx::Font const& font)
-        : Widget{get_next_id<Textbox>("textbox")}, m_font{&font} {}
+        : Textbox{get_next_id<Textbox>("textbox"), font} {}
 
     void Textbox::render(gfx::Renderer& renderer) const {
         auto border_color = m_is_focused ? gfx::Colors::Black : gfx::Colors::DarkGray;
 
         renderer.draw_rect_filled(draw_area(), gfx::Colors::LightGray);
         renderer.draw_rect_outline(draw_area(), 4, border_color);
+
         renderer.render_buffer(m_buffer, text_area().origin, m_visible_area);
     }
 
@@ -245,23 +306,12 @@ namespace ui {
     }
 
     void Textbox::update() {
-        auto const cursor_position_end = m_font->measure_text(
-            std::u32string_view{m_text.data(), m_cursor}
-        );
+        auto const text_until_cursor = std::u32string_view{m_text.data(), m_cursor};
+        auto const cursor_position_end = m_font->measure_text(text_until_cursor);
         auto const cursor_position_start = cursor_position_end.hadamard_product({1, 0});
 
         m_buffer.render_to([&](gfx::BufferRenderer& renderer) {
             renderer.clear_background(gfx::Colors::Blank);
-            renderer.draw_text(*m_font, m_text, {0, 0}, gfx::Colors::Black);
-
-            if (m_is_focused) {
-                renderer.draw_line(
-                    {std::max(1, cursor_position_start.x), cursor_position_start.y},
-                    {std::max(1, cursor_position_end.x), cursor_position_end.y},
-                    2,
-                    gfx::Colors::Black
-                );
-            }
 
             if (m_selection_begin.has_value()) {
                 auto const until_selection_begin = m_font->measure_text(
@@ -274,12 +324,31 @@ namespace ui {
                     }  // clang-format on
                 });
 
-                auto const selected_area = RectI{
-                    {until_selection_begin.x, 0},
-                    selection_size
+                RectF selected_area{
+                    Vec2f{until_selection_begin.x, 0},
+                    Vec2f{selection_size}
                 };
 
-                renderer.draw_rect_filled(selected_area, gfx::Colors::White);
+                m_selection_shader.set_value("selectionOrigin", selected_area.origin);
+                m_selection_shader.set_value("selectionSize", selected_area.size);
+
+                renderer.draw_rect_filled(selected_area, gfx::Colors::Black);
+
+                renderer.with_shader(m_selection_shader, [&](auto& shaded) {
+                    shaded.draw_text(*m_font, m_text, {0, 0}, gfx::Colors::Black);
+                });
+            }
+            else {
+                renderer.draw_text(*m_font, m_text, {0, 0}, gfx::Colors::Black);
+            }
+
+            if (m_is_focused) {
+                renderer.draw_line(
+                    {std::max(1, cursor_position_start.x), cursor_position_start.y},
+                    {std::max(1, cursor_position_end.x), cursor_position_end.y},
+                    2,
+                    gfx::Colors::Black
+                );
             }
         });
 

@@ -21,6 +21,11 @@ struct Vec2 final {
     constexpr Vec2(T x, T y)
         : x{x}, y{y} {}
 
+    template<std::integral U>
+    requires(not std::same_as<T, U> and std::floating_point<T>)
+    constexpr Vec2(U x, U y)
+        : x{static_cast<T>(x)}, y{static_cast<T>(y)} {}
+
     constexpr Vec2()
         : x{}, y{} {}
 
@@ -32,7 +37,7 @@ struct Vec2 final {
     template<std::integral U>
     requires(not std::same_as<T, U> and std::floating_point<T>)
     constexpr Vec2(Vec2<U> const other)
-        : x{static_cast<T>(other.x)}, y{static_cast<T>(other.y)} {}
+        : Vec2{other.x, other.y} {}
 
     [[nodiscard]] constexpr Vec2 hadamard_product(Vec2 const other) const {
         return Vec2{x * other.x, y * other.y};

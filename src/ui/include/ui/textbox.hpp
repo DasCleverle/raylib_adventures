@@ -24,6 +24,8 @@ namespace ui {
         std::size_t m_last_text_length{};
         Vec2i m_last_text_size{};
 
+        gfx::Shader m_selection_shader;
+
         bool m_is_selecting{false};
         std::optional<std::size_t> m_selection_begin{};
         std::size_t m_selection_length{};
