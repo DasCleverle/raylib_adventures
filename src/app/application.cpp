@@ -1,13 +1,13 @@
 #include "application.hpp"
 
 #include <cstdio>
-#include <memory>
 
 #include "gfx/font_config.hpp"
 #include "ui/button.hpp"
 #include "ui/column_layout.hpp"
 #include "ui/event.hpp"
 #include "ui/row_layout.hpp"
+#include "ui/ui_scene.hpp"
 
 static gfx::FontConfig<FontType> s_font_config = {
     {
@@ -40,12 +40,14 @@ void add_panel_widgets(Application const& app, ui::Panel& panel) {
 Application::Application()
     : m_window{1600, 900, "My cool game"},
       m_font_manager{s_font_config},
-      m_ui_panel{std::make_shared<ui::Panel>("main_panel", ui::RowLayout(1))},
-      m_widget_factory{m_event_dispatcher, m_font_manager} {}
+      m_widget_factory{m_event_dispatcher, m_font_manager},
+      m_scene_stack{std::make_shared<ui::SceneStack>()} {}
 
 void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);
     m_window.set_target_fps(165);
+
+    ui::Panel main_panel{"main_panel", ui::RowLayout(1)};
 
     // ui::Panel row_panel{"row_panel", ui::RowLayout(1)};
     ui::Panel column_panel{"column_panel", ui::ColumnLayout(1)};
@@ -53,10 +55,11 @@ void Application::init() {
     // add_panel_widgets(*this, row_panel);
     add_panel_widgets(*this, column_panel);
 
-    m_ui_panel->set_area({100, 100, 500, 400});
-    m_ui_panel->add_widgets(std::move(column_panel));
+    main_panel.set_area({100, 100, 500, 400});
+    main_panel.add_widgets(std::move(column_panel));
 
-    m_event_dispatcher.listen(m_ui_panel);
+    m_scene_stack->emplace_back<ui::UIScene>(std::move(main_panel));
+    m_event_dispatcher.listen(m_scene_stack);
 }
 
 void Application::update() {
@@ -67,5 +70,5 @@ void Application::update() {
     renderer.clear_background(gfx::Colors::RayWhite);
     renderer.draw_fps({1520, 7});
 
-    m_ui_panel->render(renderer);
+    m_scene_stack->render(renderer);
 }

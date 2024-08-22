@@ -17,14 +17,20 @@ add_library(ui STATIC
     include/ui/mouse.hpp
     include/ui/mouse_button.hpp
     include/ui/row_layout.hpp
+    include/ui/scene.hpp
+    include/ui/scene_stack.hpp
     include/ui/textbox.hpp
+    include/ui/ui_scene.hpp
     include/ui/utils.hpp
     include/ui/widget.hpp
     include/ui/widget_factory.hpp
     label.cpp
     mouse.cpp
     row_layout.cpp
+    scene_stack.cpp
     textbox.cpp
+    ui_scene.cpp
+
 )
 
 target_include_directories(ui PUBLIC include)

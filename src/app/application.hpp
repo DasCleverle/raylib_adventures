@@ -6,7 +6,7 @@
 #include "gfx/font_manager.hpp"
 #include "gfx/window.hpp"
 #include "ui/event_dispatcher.hpp"
-#include "ui/panel.hpp"
+#include "ui/scene_stack.hpp"
 #include "ui/widget_factory.hpp"
 
 class Application final {
@@ -15,8 +15,7 @@ private:
     gfx::FontManager<FontType> m_font_manager;
     ui::EventDispatcher m_event_dispatcher;
     ui::WidgetFactory<FontType> m_widget_factory;
-
-    std::shared_ptr<ui::Panel> m_ui_panel;
+    std::shared_ptr<ui::SceneStack> m_scene_stack;
 
     void update();
     void init();
