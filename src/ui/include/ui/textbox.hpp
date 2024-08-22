@@ -29,6 +29,7 @@ namespace ui {
         gfx::Shader m_selection_shader;
 
         bool m_is_selecting{false};
+        bool m_is_shift_pressed{false};
         std::optional<std::size_t> m_selection_begin{};
         std::size_t m_selection_length{};
 
@@ -39,10 +40,13 @@ namespace ui {
 
         void resize_buffer_if_needed(Vec2i required_size);
 
+        void set_selection(std::size_t begin_index, std::size_t end_index);
         void erase_selection();
         void reset_selection();
 
         [[nodiscard]] RectI text_area() const;
+
+        [[nodiscard]] std::size_t position_to_text_index(Vec2i position) const;
 
     public:
         Textbox(std::string&& id, gfx::Font const& font);

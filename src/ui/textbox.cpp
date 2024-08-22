@@ -94,7 +94,7 @@ namespace ui {
         auto is_left = event.button == MouseButton::Left;
         auto is_pressed = event.state == KeyState::Pressed;
 
-        if (not contains) {
+        if (not contains and is_pressed) {
             if (m_is_focused) {
                 m_is_focused = false;
                 m_visible_area.origin = Vec2i{0, 0};
@@ -116,32 +116,23 @@ namespace ui {
                 m_is_focused = true;
             }
 
-            auto const relative_click_position = event.position - text_area().origin;
-            auto text_size = m_font->measure_text(m_text);
+            auto const index = position_to_text_index(event.position);
 
-            if (text_size.x <= relative_click_position.x) {
-                m_cursor = m_text.size();
+            if (m_is_selecting) {
+                set_selection(m_cursor, index);
             }
             else {
-                for (std::size_t i = m_text.size(); i > 0; i--) {
-                    std::u32string_view text{m_text.data(), i};
-                    text_size = m_font->measure_text(text);
-
-                    std::u32string_view last_char{m_text.data() + i, 1};
-                    auto const last_char_size = m_font->measure_text(last_char);
-
-                    if (text_size.x <= relative_click_position.x + last_char_size.x / 2) {
-                        m_cursor = i;
-                        break;
-                    }
-                    else {
-                        m_cursor = 0;
-                    }
-                }
+                reset_selection();
+                m_cursor = index;
+                m_is_selecting = true;
             }
 
             update();
+
             return EventListenerResult::Handled;
+        }
+        else if (not m_is_shift_pressed) {
+            m_is_selecting = false;
         }
 
         return EventListenerResult::Continue;
@@ -158,6 +149,12 @@ namespace ui {
         else if (contains_target and Mouse::current_cursor() != MouseCursor::IBeam) {
             m_prev_mouse_cursor = Mouse::current_cursor();
             Mouse::set_cursor(MouseCursor::IBeam);
+        }
+
+        if (m_is_selecting) {
+            auto const index = position_to_text_index(event.target);
+            set_selection(m_cursor, index);
+            update();
         }
 
         return EventListenerResult::Continue;
@@ -179,6 +176,7 @@ namespace ui {
     EventListenerResult Textbox::handle(KeyboardEvent const& event) {
         if (event.code == KeyCode::LeftShift or event.code == KeyCode::RightShift) {
             m_is_selecting = event.state == KeyState::Pressed;
+            m_is_shift_pressed = m_is_selecting;
             return EventListenerResult::Continue;
         }
 
@@ -450,18 +448,58 @@ namespace ui {
         return Margin{6, 6, 6, 6}.apply(draw_area());
     }
 
+    [[nodiscard]] std::size_t Textbox::position_to_text_index(Vec2i const position) const {
+        auto const relative_position = position - text_area().origin;
+        auto text_size = m_font->measure_text(m_text);
+
+        if (text_size.x <= relative_position.x) {
+            return m_text.size();
+        }
+        else {
+            for (std::size_t i = m_text.size(); i > 0; i--) {
+                std::u32string_view text{m_text.data(), i};
+                text_size = m_font->measure_text(text);
+
+                std::u32string_view last_char{m_text.data() + i, 1};
+                auto const last_char_size = m_font->measure_text(last_char);
+
+                if (text_size.x <= relative_position.x + last_char_size.x / 2) {
+                    return i;
+                }
+            }
+        }
+
+        return 0;
+    }
+
     void Textbox::set_area(RectI const area) {
         Widget::set_area(area);
         resize_buffer_if_needed(text_area().size);
         update();
     }
 
-    void Textbox::resize_buffer_if_needed(Vec2i required_size) {
+    void Textbox::resize_buffer_if_needed(Vec2i const required_size) {
         if (m_buffer.size().x >= required_size.x and m_buffer.size().y >= required_size.y) {
             return;
         }
 
         m_buffer.resize(required_size + Vec2i{text_area().size.x, 0});
+    }
+
+    void Textbox::set_selection(std::size_t begin_index, std::size_t end_index) {
+        if (begin_index == end_index) {
+            reset_selection();
+            return;
+        }
+
+        if (begin_index > end_index) {
+            std::swap(begin_index, end_index);
+        }
+
+        auto const length = end_index - begin_index;
+
+        m_selection_begin = begin_index;
+        m_selection_length = length;
     }
 
     void Textbox::erase_selection() {
