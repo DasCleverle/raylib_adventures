@@ -24,6 +24,8 @@ namespace gfx {
         void draw_circle_filled(Vec2i center, int radius, Color color);
         void draw_circle_outline(Vec2i center, int radius, Color color);
 
+        void draw_triangle_filled(Vec2i vertex_0, Vec2i vertex_1, Vec2i vertex_2, Color color);
+
         void draw_line(Vec2i from, Vec2i to, int thickness, Color color);
 
         void with_shader(Shader const& shader, std::function<void(RendererBase&)> render);
