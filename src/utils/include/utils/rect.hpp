@@ -69,6 +69,20 @@ struct Rect final {
         return Rect{scaled_origin, scaled_size};
     }
 
+    [[nodiscard]] constexpr Rect scale(float factor_x, float factor_y) const {
+        if (factor_x == 1 and factor_y == 1) {
+            return *this;
+        }
+
+        auto const scaled_x = size.x * factor_x;
+        auto const scaled_y = size.y * factor_y;
+
+        return Rect{
+            origin,
+            Vec2<T>{scaled_x, scaled_y}
+        };
+    }
+
     [[nodiscard]] constexpr Rect translate(Vec2<T> delta) const {
         if (delta == Vec2<T>{}) {
             return *this;
