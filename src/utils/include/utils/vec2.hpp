@@ -26,13 +26,18 @@ struct Vec2 final {
     constexpr Vec2(U x, U y)
         : x{static_cast<T>(x)}, y{static_cast<T>(y)} {}
 
+    template<std::floating_point U>
+    requires(not std::same_as<T, U> and std::integral<T>)
+    constexpr Vec2(U x, U y)
+        : x{static_cast<T>(std::floor(x))}, y{static_cast<T>(std::floor(y))} {}
+
     constexpr Vec2()
         : x{}, y{} {}
 
     template<std::floating_point U>
     requires(not std::same_as<T, U> and std::integral<T>)
     constexpr Vec2(Vec2<U> const other)
-        : x{static_cast<T>(std::floor(other.x))}, y{static_cast<T>(std::floor(other.y))} {}
+        : Vec2{other.x, other.y} {}
 
     template<std::integral U>
     requires(not std::same_as<T, U> and std::floating_point<T>)
