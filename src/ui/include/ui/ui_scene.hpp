@@ -13,7 +13,7 @@ namespace ui {
         UIScene(Panel&& panel)
             : m_panel{std::move(panel)} {}
 
-        void render(gfx::Renderer& renderer) override;
+        void render(gfx::Renderer& renderer) const override;
         EventListenerResult handle(Event const& event) override;
     };
 

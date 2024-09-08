@@ -2,7 +2,7 @@
 
 namespace ui {
 
-    void UIScene::render(gfx::Renderer& renderer) {
+    void UIScene::render(gfx::Renderer& renderer) const {
         m_panel.render(renderer);
     }
 

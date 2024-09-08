@@ -6,7 +6,7 @@
 namespace ui {
     class Scene : public GenericEventListener {
     public:
-        virtual void render(gfx::Renderer& renderer) = 0;
+        virtual void render(gfx::Renderer& renderer) const = 0;
         virtual EventListenerResult handle(Event const& event) override = 0;
     };
 }  // namespace ui
