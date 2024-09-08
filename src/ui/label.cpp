@@ -3,16 +3,12 @@
 #include <cassert>
 #include <functional>
 
+#include "ui/utils.hpp"
 #include "utils/strings.hpp"
-
-static inline std::string get_next_label_id() {
-    static int counter = 0;
-    return std::format("button_{}", counter++);
-}
 
 namespace ui {
     Label::Label(std::string&& text, gfx::Font const& font)
-        : Widget{get_next_label_id()}, m_text{std::move(text)}, m_font{&font} {
+        : Widget{get_next_id<Label>("label")}, m_text{std::move(text)}, m_font{&font} {
         recalc_lines();
     }
 
@@ -28,6 +24,11 @@ namespace ui {
 
     std::vector<Label::Line> Label::get_lines() const {
         std::vector<Line> lines;
+
+        if (m_text == "") {
+            return lines;
+        }
+
         auto const area = draw_area();
 
         if (auto const text_size = m_font->measure_text(m_text); text_size.x < area.size.x) {
@@ -40,6 +41,10 @@ namespace ui {
         }
 
         std::vector<std::string> words = split(m_text, ' ');
+
+        if (words.size() == 1) {
+            return lines;
+        }
 
         auto begin = words.begin();
         auto end = std::prev(words.end());
