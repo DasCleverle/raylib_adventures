@@ -3,11 +3,13 @@ add_library(ui STATIC
     button.cpp
     checkbox.cpp
     column_layout.cpp
+    dropdown.cpp
     event_dispatcher.cpp
     event_listener.cpp
     include/ui/button.hpp
     include/ui/checkbox.hpp
     include/ui/column_layout.hpp
+    include/ui/dropdown.hpp
     include/ui/event.hpp
     include/ui/event_dispatcher.hpp
     include/ui/event_listener.hpp

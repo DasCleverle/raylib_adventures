@@ -1,7 +1,5 @@
 #include "application.hpp"
 
-#include <cstdio>
-
 #include "gfx/font_config.hpp"
 #include "ui/button.hpp"
 #include "ui/column_layout.hpp"
@@ -25,10 +23,19 @@ class MyTestListener : public ui::EventListener<ui::ClickEvent> {
 };
 
 void add_panel_widgets(Application const& app, ui::Panel& panel) {
+    auto const margin = ui::Margin{10, 10, 10, 10};
     auto textbox = app.widget_factory().create_textbox();
-    textbox.set_margin(ui::Margin{10, 10, 10, 10});
+    auto dropdown = app.widget_factory().create_dropdown();
+
+    textbox.set_margin(margin);
+    dropdown.set_margin(margin);
+
+    dropdown.add_option("1", "option 1", 1);
+    dropdown.add_option("2", "option 2", 2);
+    dropdown.add_option("3", "option 3", 3);
 
     panel.add_widgets(
+        std::move(dropdown),
         app.widget_factory().create_button("Button 1"),
         app.widget_factory().create_button("Button 2"),
         app.widget_factory().create_button("Button 3"),
@@ -40,12 +47,12 @@ void add_panel_widgets(Application const& app, ui::Panel& panel) {
 Application::Application()
     : m_window{1600, 900, "My cool game"},
       m_font_manager{s_font_config},
-      m_widget_factory{m_event_dispatcher, m_font_manager},
-      m_scene_stack{std::make_shared<ui::SceneStack>()} {}
+      m_scene_stack{std::make_shared<ui::SceneStack>()},
+      m_widget_factory{m_event_dispatcher, m_font_manager.default_font(), *m_scene_stack} {}
 
 void Application::init() {
     m_window.set_option(gfx::WindowOption::Resizeable, false);
-    m_window.set_target_fps(165);
+    m_window.set_target_fps(60);
 
     ui::Panel main_panel{"main_panel", ui::RowLayout(1)};
 

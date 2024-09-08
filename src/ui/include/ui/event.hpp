@@ -5,6 +5,7 @@
 #include "keycode.hpp"
 #include "keystate.hpp"
 #include "mouse_button.hpp"
+#include "utils/rect.hpp"
 #include "utils/vec2.hpp"
 
 namespace ui {
@@ -21,6 +22,11 @@ namespace ui {
         MouseButton button;
         KeyState state;
         Vec2i position;
+
+        bool is_contained_left_click(RectI const rect) const {
+            return state == KeyState::Pressed and button == MouseButton::Left
+                   and rect.contains(position);
+        }
     };
 
     struct MouseMoveEvent final {

@@ -49,6 +49,21 @@ namespace ui {
             recalc_layout();
         }
 
+        template<class W>
+        requires(std::derived_from<W, Widget>)
+        void add_widgets(std::vector<W> widgets) {
+            for (auto& widget : widgets) {
+                add_widget_core(std::move(widget));
+            }
+
+            recalc_layout();
+        }
+
+        void clear_widgets() {
+            m_widgets.clear();
+            recalc_layout();
+        }
+
         void recalc_layout() {
             m_layout->recalc(*this);
         }

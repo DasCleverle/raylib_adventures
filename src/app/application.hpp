@@ -14,8 +14,8 @@ private:
     gfx::Window m_window;
     gfx::FontManager<FontType> m_font_manager;
     ui::EventDispatcher m_event_dispatcher;
-    ui::WidgetFactory<FontType> m_widget_factory;
     std::shared_ptr<ui::SceneStack> m_scene_stack;
+    ui::WidgetFactory m_widget_factory;
 
     void update();
     void init();
@@ -31,7 +31,7 @@ public:
         }
     }
 
-    ui::WidgetFactory<FontType> const& widget_factory() const {
+    ui::WidgetFactory const& widget_factory() const {
         return m_widget_factory;
     }
 };
