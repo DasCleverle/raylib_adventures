@@ -11,7 +11,8 @@ namespace ui {
 
     class SceneStack final : public GenericEventListener {
     private:
-        std::deque<std::unique_ptr<Scene>> m_stack;
+        std::deque<std::pair<Scene*, std::optional<std::size_t>>> m_stack;
+        std::vector<std::unique_ptr<Scene>> m_managed_scenes;
 
     public:
         SceneStack(SceneStack const&) = delete;
@@ -22,9 +23,15 @@ namespace ui {
         SceneStack() = default;
         ~SceneStack() = default;
 
-        template<typename T, typename... Args>
+        template<std::derived_from<Scene> T, typename... Args>
         void emplace_back(Args... args) {
-            m_stack.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+            m_managed_scenes.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+            m_stack.emplace_back(m_managed_scenes.back().get(), m_stack.size());
+        }
+
+        template<std::derived_from<Scene> T>
+        void push_back(T& scene) {
+            m_stack.emplace_back(&scene, std::nullopt);
         }
 
         void pop();
